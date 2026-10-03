@@ -2159,7 +2159,7 @@ body.is-shake .wrap { animation: shake .4s; }
     </details>
     <div class="modal-actions">
       <button class="btn" id="tabs-all" type="button">All tabs on</button>
-      <button class="btn" value="close" type="submit" autofocus>Done</button>
+      <button class="btn" value="close" type="submit">Done</button>
     </div>
   </form>
 </dialog>
@@ -4474,6 +4474,7 @@ body.is-shake .wrap { animation: shake .4s; }
     buildToggles();
     if (typeof tabsDialog.showModal === 'function') tabsDialog.showModal();
     else tabsDialog.setAttribute('open', '');
+    tabsDialog.scrollTop = 0; // open at the tab switches, not wherever focus lands
   });
   togglesEl.addEventListener('change', (e) => {
     const cb = e.target.closest('input[data-tab]');
