@@ -17,6 +17,12 @@ shows the live version, so any update to The Hood shows up here automatically.
 Because both are on `asciikat.github.io`, your homies, missions and stash are the
 same ones as in the standalone Hood on that device.
 
+## Full screen
+
+The Ezycal and Hood tabs each have a **⛶ Full screen** button, like raccoon
+mode. The tab covers the whole screen, and where the browser allows it, hides
+the browser bars too. **Shrink**, Esc, or the phone's back gesture puts it back.
+
 ## Mission Possible Plus vs Mission Possible
 
 Both apps live on `asciikat.github.io`, so on the same device they share the

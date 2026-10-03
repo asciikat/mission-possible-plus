@@ -711,6 +711,47 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 .tabs::-webkit-scrollbar { display: none; }
 .tab { flex: none; }
+/* Ezycal and Hood tabs: a slim bar with a Full screen button. Full screen works like raccoon
+   mode: the tab covers everything, and Shrink puts it back. */
+.frame-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--line);
+  font: 800 13px/1 var(--font-hud);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--smog);
+}
+.frame-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 0 12px;
+  border: 1px solid rgba(255, 255, 255, .18);
+  background: rgba(255, 255, 255, .04);
+  color: var(--ink);
+  font: 800 13px/1 var(--font-hud);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.frame-btn svg { width: 16px; height: 16px; }
+.frame-panel.is-full {
+  position: fixed;
+  inset: 0;
+  z-index: 49;
+  display: flex;
+  flex-direction: column;
+  padding: env(safe-area-inset-top, 0px) 0 env(safe-area-inset-bottom, 0px);
+  background: #070912;
+}
+.frame-panel.is-full .frame-bar { flex: none; padding-block: 10px; }
+.frame-panel.is-full iframe { flex: 1; height: auto !important; min-height: 0; }
+.frame-open body { overflow: hidden; }
 /* the Hood tab: The Hood (../homies/) in a frame, tall enough to use the map and scroll inside */
 .hood-panel iframe {
   display: block;
@@ -1990,13 +2031,15 @@ body.is-shake .wrap { animation: shake .4s; }
 
       <!-- The calendar is its own page (../calendar/), shown here in a frame. It loads the
            first time you open the tab, and keeps its own data, so it can't disturb the board. -->
-      <div class="calendar-panel" id="calendar-panel" role="tabpanel" aria-labelledby="tab-calendar" hidden>
+      <div class="calendar-panel frame-panel" id="calendar-panel" role="tabpanel" aria-labelledby="tab-calendar" hidden>
+        <div class="frame-bar"><span>Ezycal</span><button class="frame-btn" type="button" data-full="calendar-panel" aria-label="Show Ezycal full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Full screen</span></button></div>
         <iframe id="calendar-frame" title="Ezycal" loading="lazy"></iframe>
       </div>
 
       <!-- The Hood is its own app (../homies/), shown here in a frame. It loads the first
            time you open the tab. Your homies are the same ones as in the standalone Hood. -->
-      <div class="hood-panel" id="hood-panel" role="tabpanel" aria-labelledby="tab-hood" hidden>
+      <div class="hood-panel frame-panel" id="hood-panel" role="tabpanel" aria-labelledby="tab-hood" hidden>
+        <div class="frame-bar"><span>The Hood</span><button class="frame-btn" type="button" data-full="hood-panel" aria-label="Show The Hood full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Full screen</span></button></div>
         <iframe id="hood-frame" title="The Hood" loading="lazy"></iframe>
       </div>
 
@@ -4647,6 +4690,45 @@ body.is-shake .wrap { animation: shake .4s; }
       },
     });
   });
+
+  // ── Full screen for the Ezycal and Hood tabs (like raccoon mode) ───────
+  // The tab covers the whole page, and where the browser allows it, the screen too.
+  // Shrink, Esc, or leaving the tab puts it back.
+  (() => {
+    const SHRINK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
+    const FULL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
+    let open = null;
+    function setButton(panel, full){
+      const btn = panel.querySelector('[data-full]');
+      const name = panel.querySelector('.frame-bar span').textContent;
+      btn.innerHTML = (full ? SHRINK_ICON : FULL_ICON) + `<span>${full ? 'Shrink' : 'Full screen'}</span>`;
+      btn.setAttribute('aria-label', full ? `Shrink ${name}` : `Show ${name} full screen`);
+    }
+    function exit(){
+      if (!open) return;
+      const panel = open; open = null;
+      panel.classList.remove('is-full');
+      document.documentElement.classList.remove('frame-open');
+      setButton(panel, false);
+      if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
+    }
+    function enter(panel){
+      open = panel;
+      panel.classList.add('is-full');
+      document.documentElement.classList.add('frame-open');
+      setButton(panel, true);
+      if (panel.requestFullscreen) panel.requestFullscreen({navigationUI: 'hide'}).catch(() => {});
+    }
+    document.querySelectorAll('[data-full]').forEach((btn) => btn.addEventListener('click', () => {
+      const panel = $(btn.dataset.full);
+      if (open === panel) exit(); else { exit(); enter(panel); }
+    }));
+    // the system's own back gesture or Esc leaves real full screen: follow it
+    document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && open) exit(); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) exit(); });
+    // switching tabs (or the tab being hidden) always shrinks it
+    new MutationObserver(() => { if (open && open.hidden) exit(); }).observe(document.querySelector('.board'), {subtree: true, attributes: true, attributeFilter: ['hidden']});
+  })();
 
   // ── Raccoon mode: full-screen timers ───────────────────────────────────
   const RACCOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8.5L4.5 3l4.5 2.8M18.5 8.5l1-5.5L15 5.8"/><path d="M3.5 11c0-3.6 3.8-6 8.5-6s8.5 2.4 8.5 6c0 4.4-3.8 9-8.5 9s-8.5-4.6-8.5-9z"/><path fill="currentColor" stroke="none" fill-rule="evenodd" d="M4 11.2c1.9-1.9 5.4-2.2 8-.6 2.6-1.6 6.1-1.3 8 .6-.4 2-2.3 3.2-4 3.2-1.6 0-2.7-1.1-4-1.1s-2.4 1.1-4 1.1c-1.7 0-3.6-1.2-4-3.2zM9.6 11.6a1.1 1.1 0 10-2.2 0 1.1 1.1 0 002.2 0zM16.6 11.6a1.1 1.1 0 10-2.2 0 1.1 1.1 0 002.2 0z"/><circle cx="12" cy="16.4" r="1.1" fill="currentColor" stroke="none"/></svg>';
