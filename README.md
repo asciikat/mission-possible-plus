@@ -1,8 +1,29 @@
-# Mission Possible
+# Mission Possible Plus
 
-The Mission Board to-do list with a **Calendar** tab. Single page: `index.html` (the calendar tab shows the separate calendar at `../calendar/`).
+Mission Possible, plus **The Hood**. Everything from the Mission Board to-do list
+and its **Ezycal** calendar tab, with a new **Hood** tab: the GTA-style map of
+your homies from [asciikat/homies](https://github.com/asciikat/homies).
 
-Tabs: **Today**, **Tomorrow**, **Jail**, **Ezycal** (the calendar) and **Notes**. The
+Single page: `index.html`. The Ezycal tab shows the separate calendar at
+`../calendar/`, and the Hood tab shows The Hood at `../homies/` (both in a frame,
+loaded the first time you open the tab).
+
+Tabs: **Today**, **Tomorrow**, **Jail**, **Ezycal** (the calendar), **Hood** and **Notes**.
+
+## The Hood tab
+
+The Hood lives in its own repo and site (`asciikat.github.io/homies/`). This tab
+shows the live version, so any update to The Hood shows up here automatically.
+Because both are on `asciikat.github.io`, your homies, missions and stash are the
+same ones as in the standalone Hood on that device.
+
+## Mission Possible Plus vs Mission Possible
+
+Both apps live on `asciikat.github.io`, so on the same device they share the
+same board (jobs, cash, notes) and, once you sign in, the same synced board.
+Plus is Mission Possible with the extra tab. They install as two separate apps,
+and Plus keeps its offline copy under its own name (`mpplus-*`) so the two never
+clear each other's. The
 **gear** at the top right switches any tab on or off; hiding a tab never deletes
 what's in it. The **raccoon icon** next to it opens raccoon mode: one-tap 5, 10 and
 15 minute timers plus a custom one, which fill the whole screen while they run
@@ -21,7 +42,7 @@ deleted note stays deleted). Tab choices and the running timer stay on each devi
 ## Host free on GitHub Pages
 1. Merge to `main`.
 2. Repo **Settings → Pages → Deploy from a branch → `main` / root → Save**.
-3. Open `https://<user>.github.io/<repo>/`.
+3. Open `https://asciikat.github.io/mission-possible-plus/`.
 
 Without sync, your jobs and cash are saved only in each browser. **Save backup**
 / **Merge backup** at the bottom of the page combine two devices by hand: jobs

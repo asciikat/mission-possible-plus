@@ -7,8 +7,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Mission Possible">
-<title>Mission Possible</title>
+<meta name="apple-mobile-web-app-title" content="Possible+">
+<title>Mission Possible Plus</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -695,10 +695,20 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 #tab-jail[aria-selected="true"]::after { background: var(--siren-r); }
 #tab-tomorrow[aria-selected="true"]::after { background: var(--dusk); }
 #tab-calendar[aria-selected="true"]::after { background: var(--palm); }
+#tab-hood[aria-selected="true"]::after { background: var(--gold); }
 /* four tabs on a small phone: scroll sideways rather than squash */
 .tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 .tabs::-webkit-scrollbar { display: none; }
 .tab { flex: none; }
+/* the Hood tab: The Hood (../homies/) in a frame, tall enough to use the map and scroll inside */
+.hood-panel iframe {
+  display: block;
+  width: 100%;
+  height: max(680px, 85vh);
+  border: 0;
+  background: #0d0a14;
+  color-scheme: dark;
+}
 /* the calendar tab: the calendar page in a frame, tall enough to scroll inside */
 .calendar-panel iframe {
   display: block;
@@ -1797,7 +1807,7 @@ body.is-shake .wrap { animation: shake .4s; }
         <span class="cash" id="total-cash">$0</span>
         <span class="stars" id="stars" role="img" aria-label="Heat level 0 of 5"></span>
       </div>
-      <button class="icon-btn icon-btn--install" id="install-hud" type="button" aria-label="Install Mission Possible as an app" title="Install app" hidden>
+      <button class="icon-btn icon-btn--install" id="install-hud" type="button" aria-label="Install Mission Possible Plus as an app" title="Install app" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg>
       </button>
       <button class="icon-btn" id="coon-btn" type="button" aria-haspopup="dialog" aria-label="Raccoon timers" title="Raccoon timers"></button>
@@ -1916,6 +1926,7 @@ body.is-shake .wrap { animation: shake .4s; }
           <button class="tab" id="tab-tomorrow" role="tab" type="button" aria-selected="false" aria-controls="tomorrow-list" tabindex="-1">Tomorrow <span class="count" id="count-tomorrow">0</span></button>
           <button class="tab" id="tab-jail" role="tab" type="button" aria-selected="false" aria-controls="jail-list" tabindex="-1">Jail <span class="count" id="count-jail">0</span></button>
           <button class="tab" id="tab-calendar" role="tab" type="button" aria-selected="false" aria-controls="calendar-panel" tabindex="-1">Ezycal</button>
+          <button class="tab" id="tab-hood" role="tab" type="button" aria-selected="false" aria-controls="hood-panel" tabindex="-1">Hood</button>
           <button class="tab" id="tab-notes" role="tab" type="button" aria-selected="false" aria-controls="notes-panel" tabindex="-1">Notes</button>
         </div>
       </div>
@@ -1970,6 +1981,12 @@ body.is-shake .wrap { animation: shake .4s; }
            first time you open the tab, and keeps its own data, so it can't disturb the board. -->
       <div class="calendar-panel" id="calendar-panel" role="tabpanel" aria-labelledby="tab-calendar" hidden>
         <iframe id="calendar-frame" title="Ezycal" loading="lazy"></iframe>
+      </div>
+
+      <!-- The Hood is its own app (../homies/), shown here in a frame. It loads the first
+           time you open the tab. Your homies are the same ones as in the standalone Hood. -->
+      <div class="hood-panel" id="hood-panel" role="tabpanel" aria-labelledby="tab-hood" hidden>
+        <iframe id="hood-frame" title="The Hood" loading="lazy"></iframe>
       </div>
 
       <!-- Notes: saved on this device as you type. -->
@@ -2234,7 +2251,7 @@ body.is-shake .wrap { animation: shake .4s; }
   // A heist that finished while the page was closed has already been paid out.
   if (visibleCompletedMissions.length >= HEIST_SIZE) visibleCompletedMissions = [];
 
-  let currentTab = 'active'; // active (today) | tomorrow | jail | calendar | notes
+  let currentTab = 'active'; // active (today) | tomorrow | jail | calendar | hood | notes
   let openTray = null;       // which job's action tray is open, e.g. "job-123"
   let ideaIndex = 0;
   const landedIds = new Set();
@@ -2261,17 +2278,17 @@ body.is-shake .wrap { animation: shake .4s; }
   const tabTomorrow = $('tab-tomorrow');
   const tomorrowListEl = $('tomorrow-list');
   const tomorrowEmptyEl = $('tomorrow-empty-state');
-  const TAB_ORDER = ['active', 'tomorrow', 'jail', 'calendar', 'notes'];
+  const TAB_ORDER = ['active', 'tomorrow', 'jail', 'calendar', 'hood', 'notes'];
   const TAB_EL = {
-    active: tabActive, tomorrow: tabTomorrow, jail: tabJail, calendar: $('tab-calendar'),
+    active: tabActive, tomorrow: tabTomorrow, jail: tabJail, calendar: $('tab-calendar'), hood: $('tab-hood'),
     notes: $('tab-notes'),
   };
   const TAB_NAME = {
-    active: 'Today', tomorrow: 'Tomorrow', jail: 'Jail', calendar: 'Ezycal',
+    active: 'Today', tomorrow: 'Tomorrow', jail: 'Jail', calendar: 'Ezycal', hood: 'Hood',
     notes: 'Notes',
   };
   // Tabs that show their own panel instead of a job list.
-  const PANEL_TABS = { calendar: $('calendar-panel'), notes: $('notes-panel') };
+  const PANEL_TABS = { calendar: $('calendar-panel'), hood: $('hood-panel'), notes: $('notes-panel') };
   // Tabs switched off with the gear. Kept per device, like mute.
   let tabsOff = (Array.isArray(store.get('mp_tabs_off', [])) ? store.get('mp_tabs_off', []) : [])
     .filter((t) => TAB_ORDER.includes(t));
@@ -2281,6 +2298,8 @@ body.is-shake .wrap { animation: shake .4s; }
   const calendarPanel = $('calendar-panel');
   const calendarFrame = $('calendar-frame');
   const CALENDAR_URL = '../calendar/?embed=1';
+  const hoodFrame = $('hood-frame');
+  const HOOD_URL = '../homies/?embed=1';
   const pickBtn = $('pick-btn');
   const muteBtn = $('mute-btn');
   const overlay = $('gta-overlay');
@@ -2895,8 +2914,8 @@ body.is-shake .wrap { animation: shake .4s; }
       TAB_EL[tab].tabIndex = on ? 0 : -1;
     });
 
-    // ezycal (the calendar) and notes: no jobs, so nothing below applies. The
-    // calendar frame loads the first time it's opened and stays, so coming back is instant.
+    // ezycal (the calendar), the Hood and notes: no jobs, so nothing below applies. The
+    // calendar and Hood frames load the first time they're opened and stay, so coming back is instant.
     Object.entries(PANEL_TABS).forEach(([tab, panel]) => {
       const on = currentTab === tab;
       TAB_EL[tab].setAttribute('aria-selected', String(on));
@@ -2905,6 +2924,7 @@ body.is-shake .wrap { animation: shake .4s; }
     });
     const onPanel = currentTab in PANEL_TABS;
     if (currentTab === 'calendar' && !calendarFrame.getAttribute('src')) calendarFrame.setAttribute('src', CALENDAR_URL);
+    if (currentTab === 'hood' && !hoodFrame.getAttribute('src')) hoodFrame.setAttribute('src', HOOD_URL);
     if (currentTab === 'notes') renderNotes();
 
     $('count-active').textContent = String(active.length);
@@ -4115,7 +4135,7 @@ body.is-shake .wrap { animation: shake .4s; }
     window.addEventListener('appinstalled', () => {
       deferred = null;
       hide();
-      toast('Installed · find Mission Possible on your home screen');
+      toast('Installed · find Mission Possible Plus on your home screen');
     });
 
     function steps() {
@@ -4136,7 +4156,7 @@ body.is-shake .wrap { animation: shake .4s; }
       return [
         'Use <b>Chrome</b> or <b>Edge</b>.',
         'Click the <b>install icon</b> at the right of the address bar, or open the browser menu.',
-        'Choose <b>Install Mission Possible</b>.',
+        'Choose <b>Install Mission Possible Plus</b>.',
       ];
     }
 
