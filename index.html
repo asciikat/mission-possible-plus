@@ -301,13 +301,9 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
   text-shadow: 0 1px 8px rgba(5, 4, 10, .8);
 }
 
-/* layout: on phones the job board comes first, everything else follows */
+/* layout: the job board, then Gangsta Credit tucked in under it */
 .layout { display: flex; flex-direction: column; gap: 16px; }
-.side { display: contents; }
-.board { order: 1; }
 .big { scroll-margin-top: 76px; }
-.heist { order: 2; }
-.intel { order: 3; }
 
 .panel {
   position: relative;
@@ -369,26 +365,42 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .composer--tomorrow .add-btn { background: var(--dusk); }
 @keyframes nudge { 25% { transform: translateX(-6px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-3px); } }
 
-/* ───────────────────────── heist tracker ───────────────────────── */
+/* ───────────────────────── heist tracker (small, under the board) ───────────────────────── */
 .heist {
-  background: linear-gradient(180deg, rgba(255, 209, 102, .09), transparent 45%), var(--asphalt);
-  border-color: rgba(255, 209, 102, .22);
+  background: linear-gradient(180deg, rgba(255, 209, 102, .06), transparent 60%), var(--asphalt);
+  border-color: rgba(255, 209, 102, .18);
 }
-.heist-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; }
+.panel.heist { padding: 12px 16px; }
+.heist-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.heist-title {
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 10px;
+  font: 900 20px/1 var(--font-display);
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+.heist-sub {
+  font: 600 12px/1 var(--font-hud);
+  letter-spacing: .12em;
+  color: var(--dim);
+}
 .heist-count {
-  font: 900 48px/.8 var(--font-display);
+  font: 900 26px/.8 var(--font-display);
   color: var(--gold);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
-.heist-count small { font-size: 24px; color: var(--dim); }
+.heist-count small { font-size: 15px; color: var(--dim); }
 .slots {
   list-style: none;
-  margin: 16px 0 0;
+  margin: 10px 0 0;
   padding: 0;
   display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
-  gap: 8px;
+  grid-template-columns: repeat(5, 34px);
+  gap: 6px;
 }
 .slot {
   aspect-ratio: 1 / 1;
@@ -397,7 +409,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
   place-items: center;
   border: 1.5px dashed rgba(255, 209, 102, .32);
   color: rgba(255, 209, 102, .4);
-  font: 800 20px/1 var(--font-display);
+  font: 800 15px/1 var(--font-display);
   transform: skewX(-6deg);
 }
 .slot svg { width: 58%; height: auto; transform: skewX(6deg); }
@@ -405,14 +417,14 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
   border: 0;
   background: linear-gradient(160deg, #ffe39a, var(--gold) 45%, var(--flare));
   color: var(--shade);
-  box-shadow: 0 8px 24px -10px rgba(255, 170, 60, .8);
+  box-shadow: 0 6px 16px -8px rgba(255, 170, 60, .8);
 }
 .slot.is-new { animation: slotPop .6s var(--snap); }
 @keyframes slotPop {
   0% { transform: skewX(-6deg) scale(.3) rotate(-12deg); opacity: 0; }
   100% { transform: skewX(-6deg) scale(1) rotate(0); opacity: 1; }
 }
-.banked { list-style: none; margin: 14px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.banked { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .banked li {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
@@ -430,7 +442,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
   text-decoration-thickness: 2px;
   overflow-wrap: anywhere;
 }
-.banked-empty { margin: 14px 0 0; font-size: 15px; color: var(--smog); }
+.banked-empty { margin: 10px 0 0; font-size: 14px; color: var(--smog); }
 .mini-x {
   position: relative;
   width: 30px;
@@ -446,13 +458,13 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .mini-x::after { content: ""; position: absolute; inset: -6px; }
 .mini-x svg { width: 15px; height: 15px; }
 .lifetime {
-  margin: 14px 0 0;
-  padding-top: 12px;
+  margin: 10px 0 0;
+  padding-top: 10px;
   border-top: 1px solid var(--line);
   display: flex;
   flex-wrap: wrap;
   gap: 6px 18px;
-  font: 600 13px/1 var(--font-hud);
+  font: 600 12px/1 var(--font-hud);
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--dim);
@@ -677,7 +689,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
   padding: 12px 16px 0;
   border-bottom: 1px solid var(--line);
 }
-.tabs { display: flex; gap: 22px; }
+.tabs { display: flex; column-gap: 22px; }
 .tab {
   position: relative;
   display: inline-flex;
@@ -707,9 +719,8 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 #tab-tomorrow[aria-selected="true"]::after { background: var(--dusk); }
 #tab-calendar[aria-selected="true"]::after { background: var(--palm); }
 #tab-hood[aria-selected="true"]::after { background: var(--gold); }
-/* four tabs on a small phone: scroll sideways rather than squash */
-.tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
-.tabs::-webkit-scrollbar { display: none; }
+/* six tabs don't fit on a phone: wrap onto a second row so none hide off the edge */
+.tabs { flex-wrap: wrap; min-width: 0; }
 .tab { flex: none; }
 /* the Hood tab: The Hood (../homies/) in a frame, tall enough to use the map and scroll inside */
 .hood-panel iframe {
@@ -1056,8 +1067,7 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 .rates .rate--gold dt { color: var(--gold); }
 .rates .rate--gold dd { color: var(--gold); }
 .rates .rate--jail dt { color: #ff8a96; }
-.intel-note { margin: 12px 0 0; font-size: 15px; color: var(--smog); }
-.intel h3 { margin: 22px 0 10px; }
+.modal .intel-note { margin: 12px 0 4px; font-size: 15px; }
 .ladder { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
 .ladder li {
   display: flex;
@@ -1445,8 +1455,32 @@ body.is-shake .wrap { animation: shake .4s; }
 .modal-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; margin-top: 20px; }
 
 /* ───────────────────────── tab settings (gear) ───────────────────────── */
-.modal--tabs { border-color: rgba(255, 255, 255, .2); }
+.modal--tabs {
+  border-color: rgba(255, 255, 255, .2);
+  max-height: calc(100dvh - 32px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
 .modal--tabs .eyebrow { color: var(--smog); }
+.modal--tabs .settings-head { margin: 16px 0 6px; }
+.settings-more { margin-top: 12px; border-top: 1px solid var(--line); }
+.settings-more > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 2px 2px;
+  cursor: pointer;
+  list-style: none;
+  font: 800 22px/1 var(--font-display);
+  letter-spacing: .02em;
+  text-transform: uppercase;
+}
+.settings-more > summary::-webkit-details-marker { display: none; }
+.settings-more > summary::after { content: "+"; color: var(--dim); font-size: 26px; }
+.settings-more[open] > summary::after { content: "\2212"; }
+.settings-more > summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.settings-more .ladder { margin-top: 12px; }
 .tab-toggles { list-style: none; margin: 16px 0 0; padding: 0; display: grid; gap: 4px; }
 .tab-toggle {
   display: flex;
@@ -1714,14 +1748,7 @@ body.is-shake .wrap { animation: shake .4s; }
   .pay { font-size: 27px; }
 }
 @media (min-width: 980px) {
-  .layout {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) 340px;
-    gap: 20px;
-    align-items: start;
-  }
-  .board { grid-column: 1; grid-row: 1; min-height: 560px; }
-  .side { display: flex; flex-direction: column; gap: 20px; grid-column: 2; grid-row: 1; }
+  .board { min-height: 560px; }
   .hold-btn { font-size: 22px; }
 }
 /* phones: squeeze the chrome so today's jobs sit near the top of the screen */
@@ -1743,7 +1770,7 @@ body.is-shake .wrap { animation: shake .4s; }
   .hero h1 { margin-top: 7px; font-size: clamp(38px, 11vw, 48px); }
   .hero-tag { display: none; }
   .board-head { padding: 4px 12px 0; }
-  .tabs { gap: 16px; }
+  .tabs { column-gap: 16px; }
   .tab { gap: 6px; padding: 8px 0 10px; font-size: 22px; }
   .count { min-width: 20px; padding: 3px 5px; font-size: 12px; }
   .composer { padding: 10px 12px 0; }
@@ -1763,7 +1790,7 @@ body.is-shake .wrap { animation: shake .4s; }
 }
 @media (max-width: 380px) {
   .rank-next { display: none; }
-  .tabs { gap: 12px; }
+  .tabs { column-gap: 12px; }
   .tab { font-size: 20px; }
   .job { column-gap: 8px; }
   .job-done { width: 40px; height: 40px; }
@@ -1771,9 +1798,9 @@ body.is-shake .wrap { animation: shake .4s; }
   .pay { font-size: 22px; }
   .add-btn { padding: 0 14px 0 12px; }
 }
-/* up to seven tabs on a phone: keep them compact; the row scrolls sideways if needed */
+/* up to seven tabs on a phone: keep them compact; the row wraps if needed */
 @media (max-width: 430px) {
-  .tabs { gap: 9px; }
+  .tabs { column-gap: 9px; }
   .tab { gap: 4px; font-size: 17px; }
   .count { min-width: 17px; padding: 2px 4px; font-size: 11px; }
   .stash { gap: 6px; }
@@ -1823,7 +1850,7 @@ body.is-shake .wrap { animation: shake .4s; }
       </button>
       <button class="icon-btn" id="coon-btn" type="button" aria-haspopup="dialog" aria-label="Raccoon timers" title="Raccoon timers"></button>
       <button class="icon-btn" id="mute-btn" type="button" aria-pressed="false" aria-label="Mute sound"></button>
-      <button class="icon-btn" id="tabs-btn" type="button" aria-haspopup="dialog" aria-label="Choose which tabs to show" title="Tabs">
+      <button class="icon-btn" id="tabs-btn" type="button" aria-haspopup="dialog" aria-label="Settings: tabs, pay rates and rank ladder" title="Settings">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 01-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
       </button>
     </div>
@@ -1894,42 +1921,6 @@ body.is-shake .wrap { animation: shake .4s; }
     </section>
 
   <div class="layout">
-    <div class="side">
-      <section class="panel heist" aria-labelledby="heist-title">
-        <div class="heist-head">
-          <div>
-            <p class="eyebrow">Today's heist · 5 wins</p>
-            <h2 class="panel-title" id="heist-title">Gangsta Credit</h2>
-          </div>
-          <div class="heist-count" aria-live="polite"><span id="heist-now">0</span><small>/5</small></div>
-        </div>
-        <ol class="slots" id="slots" aria-label="Heist progress"></ol>
-        <ul class="banked" id="completed-list" aria-label="Banked wins"></ul>
-        <p class="banked-empty" id="banked-empty">Bank 5 wins to pull off the heist.</p>
-        <p class="lifetime">
-          <span>Lifetime <b id="wins-counter">0</b> wins</span>
-          <span><b id="heist-total">0</b> heists</span>
-          <span><b id="big-total">0</b> big scores</span>
-        </p>
-      </section>
-
-      <section class="panel intel" aria-labelledby="intel-title">
-        <p class="eyebrow">The rules</p>
-        <h2 class="panel-title" id="intel-title">Pay rates</h2>
-        <dl class="rates">
-          <div><dt>Same day</dt><dd>$50</dd></div>
-          <div><dt>Day 1–4</dt><dd>$40</dd></div>
-          <div class="rate--gold"><dt>Day 5–6 · last call</dt><dd>$100</dd></div>
-          <div class="rate--jail"><dt>Day 7+ · jail</dt><dd>$50</dd></div>
-          <div class="rate--gold"><dt>Big score prep step</dt><dd>$25</dd></div>
-          <div class="rate--gold"><dt>The big score</dt><dd>$500</dd></div>
-        </dl>
-        <p class="intel-note">At day 14 the Five-0 come knocking. Every 5 wins scores a heist. Tap a job's stars to raise its wanted level and jump it up the list; stars cool off at 7 AM. Tomorrow's jobs land at 7 AM and start fresh. The big score never ages.</p>
-        <h3 class="eyebrow">Rank ladder</h3>
-        <ol class="ladder" id="ladder"></ol>
-      </section>
-    </div>
-
     <section class="panel board" aria-label="Jobs">
       <div class="board-head">
         <div class="tabs" role="tablist" aria-label="Job lists">
@@ -2023,6 +2014,21 @@ body.is-shake .wrap { animation: shake .4s; }
         </div>
       </div>
 
+    </section>
+
+    <section class="panel heist" aria-labelledby="heist-title">
+      <div class="heist-head">
+        <h2 class="heist-title" id="heist-title">Gangsta Credit <span class="heist-sub">5 wins = a heist</span></h2>
+        <div class="heist-count" aria-live="polite"><span id="heist-now">0</span><small>/5</small></div>
+      </div>
+      <ol class="slots" id="slots" aria-label="Heist progress"></ol>
+      <ul class="banked" id="completed-list" aria-label="Banked wins"></ul>
+      <p class="banked-empty" id="banked-empty">Bank 5 wins to pull off the heist.</p>
+      <p class="lifetime">
+        <span>Lifetime <b id="wins-counter">0</b> wins</span>
+        <span><b id="heist-total">0</b> heists</span>
+        <span><b id="big-total">0</b> big scores</span>
+      </p>
     </section>
   </div>
 
@@ -2131,13 +2137,29 @@ body.is-shake .wrap { animation: shake .4s; }
 
 <dialog class="modal modal--tabs" id="tabs-dialog" aria-labelledby="tabs-title">
   <form method="dialog">
-    <p class="eyebrow">Settings</p>
-    <h2 id="tabs-title">Tabs</h2>
+    <h2 id="tabs-title">Settings</h2>
+    <h3 class="eyebrow settings-head">Tabs</h3>
     <p>Switch tabs on or off. Turning one off only hides it; nothing in it is deleted.</p>
     <ul class="tab-toggles" id="tab-toggles"></ul>
+    <details class="settings-more">
+      <summary>Pay rates &amp; rules</summary>
+      <dl class="rates">
+        <div><dt>Same day</dt><dd>$50</dd></div>
+        <div><dt>Day 1–4</dt><dd>$40</dd></div>
+        <div class="rate--gold"><dt>Day 5–6 · last call</dt><dd>$100</dd></div>
+        <div class="rate--jail"><dt>Day 7+ · jail</dt><dd>$50</dd></div>
+        <div class="rate--gold"><dt>Big score prep step</dt><dd>$25</dd></div>
+        <div class="rate--gold"><dt>The big score</dt><dd>$500</dd></div>
+      </dl>
+      <p class="intel-note">At day 14 the Five-0 come knocking. Every 5 wins scores a heist. Tap a job's stars to raise its wanted level and jump it up the list; stars cool off at 7 AM. Tomorrow's jobs land at 7 AM and start fresh. The big score never ages.</p>
+    </details>
+    <details class="settings-more">
+      <summary>Rank ladder</summary>
+      <ol class="ladder" id="ladder"></ol>
+    </details>
     <div class="modal-actions">
-      <button class="btn" id="tabs-all" type="button">All on</button>
-      <button class="btn" value="close" type="submit" autofocus>Done</button>
+      <button class="btn" id="tabs-all" type="button">All tabs on</button>
+      <button class="btn" value="close" type="submit">Done</button>
     </div>
   </form>
 </dialog>
@@ -4452,6 +4474,7 @@ body.is-shake .wrap { animation: shake .4s; }
     buildToggles();
     if (typeof tabsDialog.showModal === 'function') tabsDialog.showModal();
     else tabsDialog.setAttribute('open', '');
+    tabsDialog.scrollTop = 0; // open at the tab switches, not wherever focus lands
   });
   togglesEl.addEventListener('change', (e) => {
     const cb = e.target.closest('input[data-tab]');
