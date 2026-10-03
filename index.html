@@ -276,6 +276,17 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
   transform-origin: left bottom;
   filter: drop-shadow(0 4px 0 rgba(5, 4, 10, .9));
 }
+.hero h1 .plus-badge {
+  display: inline-block;
+  padding: .04em .22em .02em;
+  border-radius: 10px;
+  background: linear-gradient(180deg, #ffe08f, var(--gold));
+  color: #3d2300;
+  font-size: .55em;
+  vertical-align: .32em;
+  transform: rotate(-4deg);
+  box-shadow: 0 3px 0 #a36d00;
+}
 .hero h1 .grad {
   background: linear-gradient(100deg, var(--neon) 10%, var(--flare) 90%);
   -webkit-background-clip: text;
@@ -1823,8 +1834,8 @@ body.is-shake .wrap { animation: shake .4s; }
   <section class="hero" aria-labelledby="board-title">
     <canvas class="hero-sky" id="hero-sky" aria-hidden="true"></canvas>
     <span class="hero-eyebrow"><span class="live-dot" aria-hidden="true"></span><span id="hero-date">Today</span></span>
-    <h1 id="board-title">Mission <span class="grad">Possible</span></h1>
-    <p class="hero-tag">Every job pays. Even the tiny ones.</p>
+    <h1 id="board-title">Mission <span class="grad">Possible</span> <span class="plus-badge">Plus</span></h1>
+    <p class="hero-tag">Every job pays. Even the tiny ones. Now with your Hood.</p>
   </section>
 
   <section class="big" id="big" aria-labelledby="big-title">
