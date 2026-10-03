@@ -24,8 +24,10 @@ same board (jobs, cash, notes) and, once you sign in, the same synced board.
 Plus is Mission Possible with the extra tab. They install as two separate apps,
 and Plus keeps its offline copy under its own name (`mpplus-*`) so the two never
 clear each other's. The
-**gear** at the top right switches any tab on or off; hiding a tab never deletes
-what's in it. The **raccoon icon** next to it opens raccoon mode: one-tap 5, 10 and
+**gear** at the top right opens Settings: switch any tab on or off (hiding a tab
+never deletes what's in it), and look up the **pay rates & rules** and the **rank
+ladder**. On a phone the tabs wrap onto a second row so none hide off the edge.
+**Gangsta Credit** (5 wins = a heist) is the small panel under the job board. The **raccoon icon** next to it opens raccoon mode: one-tap 5, 10 and
 15 minute timers plus a custom one, which fill the whole screen while they run
 (Shrink tucks one into a corner chip; tap the icon to bring it back). **The Big
 Score** is the slim gold bar under the banner; tap it to plan it, add prep steps or
