@@ -740,6 +740,8 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
   cursor: pointer;
 }
 .frame-btn svg { width: 16px; height: 16px; }
+/* The Hood has its own full-screen button in its top bar, so its bar here is hidden */
+#hood-panel .frame-bar { display: none; }
 .frame-panel.is-full {
   position: fixed;
   inset: 0;
@@ -3981,10 +3983,19 @@ body.is-shake .wrap { animation: shake .4s; }
   });
 
   function setTab(tab, focus) {
+    const changed = tab !== currentTab;
     currentTab = tab;
     openTray = null;
     renderBoard();
     if (focus) TAB_EL[tab].focus();
+    // Ezycal and Hood: size the frame to the screen and line it up under the top bar,
+    // so everything inside (sheets, buttons) stays on screen
+    if (changed && (tab === 'calendar' || tab === 'hood')) {
+      fitFrames();
+      const hudBottom = document.querySelector('.hud').getBoundingClientRect().bottom;
+      const head = document.querySelector('.board-head');
+      window.scrollTo({ top: Math.max(0, head.getBoundingClientRect().top + window.scrollY - hudBottom), behavior: reduceMotion() ? 'auto' : 'smooth' });
+    }
   }
   TAB_ORDER.forEach((tab) => TAB_EL[tab].addEventListener('click', () => setTab(tab)));
   tabActive.parentElement.addEventListener('keydown', (e) => {
@@ -4691,6 +4702,22 @@ body.is-shake .wrap { animation: shake .4s; }
     });
   });
 
+  // ── Ezycal and Hood frames: fit the screen ─────────────────────────────
+  // Each frame is as tall as the screen below the top bar. The frame also carries how much
+  // of it the top bar covers (data-cover-top), so The Hood can keep its sheets in view.
+  function fitFrames() {
+    const hudBottom = Math.round(document.querySelector('.hud').getBoundingClientRect().bottom);
+    const headH = document.querySelector('.board-head').offsetHeight;
+    document.querySelectorAll('.frame-panel').forEach((panel) => {
+      const frame = panel.querySelector('iframe');
+      const full = panel.classList.contains('is-full');
+      frame.dataset.coverTop = full ? '0' : String(hudBottom);
+      if (!full) frame.style.height = `${Math.max(460, window.innerHeight - hudBottom - headH - panel.querySelector('.frame-bar').offsetHeight - 4)}px`;
+    });
+  }
+  window.addEventListener('resize', fitFrames);
+  fitFrames();
+
   // ── Full screen for the Ezycal and Hood tabs (like raccoon mode) ───────
   // The tab covers the whole page, and where the browser allows it, the screen too.
   // Shrink, Esc, or leaving the tab puts it back.
@@ -4698,7 +4725,11 @@ body.is-shake .wrap { animation: shake .4s; }
     const SHRINK_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>';
     const FULL_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>';
     let open = null;
+    function tellHood(panel, on){
+      if (panel.id === 'hood-panel' && hoodFrame.contentWindow) hoodFrame.contentWindow.postMessage({ source: 'mission-possible', type: 'fullscreen-state', on }, location.origin);
+    }
     function setButton(panel, full){
+      tellHood(panel, full);
       const btn = panel.querySelector('[data-full]');
       const name = panel.querySelector('.frame-bar span').textContent;
       btn.innerHTML = (full ? SHRINK_ICON : FULL_ICON) + `<span>${full ? 'Shrink' : 'Full screen'}</span>`;
@@ -4710,6 +4741,7 @@ body.is-shake .wrap { animation: shake .4s; }
       panel.classList.remove('is-full');
       document.documentElement.classList.remove('frame-open');
       setButton(panel, false);
+      fitFrames();
       if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen().catch(() => {});
     }
     function enter(panel){
@@ -4717,6 +4749,7 @@ body.is-shake .wrap { animation: shake .4s; }
       panel.classList.add('is-full');
       document.documentElement.classList.add('frame-open');
       setButton(panel, true);
+      fitFrames();
       if (panel.requestFullscreen) panel.requestFullscreen({navigationUI: 'hide'}).catch(() => {});
     }
     document.querySelectorAll('[data-full]').forEach((btn) => btn.addEventListener('click', () => {
@@ -4726,6 +4759,14 @@ body.is-shake .wrap { animation: shake .4s; }
     // the system's own back gesture or Esc leaves real full screen: follow it
     document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && open) exit(); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && open) exit(); });
+    // The Hood's own full-screen button (in its top bar) asks for this
+    window.addEventListener('message', (e) => {
+      if (e.origin !== location.origin || e.source !== hoodFrame.contentWindow) return;
+      const d = e.data;
+      if (!d || d.source !== 'homies' || d.type !== 'fullscreen') return;
+      const panel = $('hood-panel');
+      if (open === panel) exit(); else { exit(); enter(panel); }
+    });
     // switching tabs (or the tab being hidden) always shrinks it
     new MutationObserver(() => { if (open && open.hidden) exit(); }).observe(document.querySelector('.board'), {subtree: true, attributes: true, attributeFilter: ['hidden']});
   })();
