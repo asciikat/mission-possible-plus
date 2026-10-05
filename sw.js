@@ -4,7 +4,8 @@
 // last saved copy when offline. Sign-in and database traffic are never touched.
 const CACHE = 'mpplus-v1';
 const SHELL = ['./', 'index.html', 'firebase-config.js', 'manifest.webmanifest',
-  'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png'];
+  'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
+  'icons/raccoon/calm.webp', 'icons/raccoon/sneaky.webp', 'icons/raccoon/feral.webp'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));

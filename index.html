@@ -1627,7 +1627,7 @@ body.is-shake .wrap { animation: shake .4s; }
   background: linear-gradient(160deg, var(--neon), var(--flare));
   color: var(--shade);
 }
-.coon-avatar svg { width: 30px; height: 30px; }
+.coon-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; transform: scale(1.12); }
 .coon-head-text { flex: 1; min-width: 0; }
 .coon-head-text .eyebrow { margin-bottom: 4px; }
 .modal--coon h2 { margin: 0; font: 900 clamp(28px, 8vw, 36px)/.9 var(--font-display); text-transform: uppercase; overflow-wrap: break-word; }
@@ -1669,7 +1669,7 @@ body.is-shake .wrap { animation: shake .4s; }
 }
 .coon-quick-go:active { transform: scale(.985); }
 .coon-quick-go:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--gold); }
-.coon-quick-go > svg { position: absolute; top: 14px; right: 16px; width: 40px; height: 40px; color: rgba(255, 155, 61, .6); }
+.coon-quick-go > img { position: absolute; top: 10px; right: 12px; width: 76px; height: 76px; filter: drop-shadow(0 4px 0 rgba(5, 4, 10, .7)); }
 .coon-quick-go b {
   font: 900 clamp(84px, 24vw, 128px)/.8 var(--font-display);
   letter-spacing: -.01em;
@@ -1798,8 +1798,11 @@ body.is-shake .wrap { animation: shake .4s; }
   box-shadow: 0 0 24px var(--neon);
 }
 .coon-inner { position: relative; z-index: 1; margin: auto; display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 640px; }
-.coon-face { width: calc(76px + min(var(--chaos), 30) * 1.4px); height: calc(76px + min(var(--chaos), 30) * 1.4px); color: var(--flare); transition: width .3s var(--snap), height .3s var(--snap); }
-.coon-face svg { width: 100%; height: 100%; }
+/* the raccoon itself: calm, then sneaky (into your stash), then feral (raiding your fridge) */
+.coon-face { width: calc(128px + min(var(--chaos), 30) * 1.6px); height: calc(128px + min(var(--chaos), 30) * 1.6px); transition: width .3s var(--snap), height .3s var(--snap); }
+.coon-face img { display: block; width: 100%; height: 100%; filter: drop-shadow(0 6px 0 rgba(5, 4, 10, .75)); }
+.coon-face.is-swap img { animation: moodSwap .5s var(--snap); }
+@keyframes moodSwap { 0% { transform: scale(.7) rotate(-8deg); filter: brightness(2.2); } 100% { transform: none; } }
 .coon-kicker {
   display: inline-flex;
   align-items: center;
@@ -1896,14 +1899,17 @@ body.is-shake .wrap { animation: shake .4s; }
 .coon.is-done .coon-fill { height: 100% !important; background: linear-gradient(0deg, rgba(255, 209, 102, .45), rgba(255, 155, 61, .2)); }
 .coon.is-done .coon-fill::before { display: none; }
 .coon.is-done .coon-time { color: var(--gold); animation: coonBlink .8s steps(2, jump-none) infinite; }
-.coon.is-done .coon-kicker, .coon.is-done .coon-face { color: var(--gold); }
+.coon.is-done .coon-kicker { color: var(--gold); }
 .coon.is-done .coon-face { animation: none; }
 .coon.is-done .coon-sub { color: var(--ink); }
 @keyframes coonBlink { 50% { opacity: .35; } }
 @media (max-height: 640px) {
   .coon-inner { gap: 10px; }
-  .coon-face { display: none; }
+  .coon-face { width: 72px; height: 72px; }
   .coon-time { font-size: clamp(84px, 24vh, 200px); }
+}
+@media (max-height: 460px) {
+  .coon-face { display: none; }
 }
 .coon-chip {
   position: fixed;
@@ -5090,6 +5096,9 @@ body.is-shake .wrap { animation: shake .4s; }
   ];
   // ...and the minutes in between get a little warning each.
   const COON_RESTLESS = ['{name} sniffs the air', "{name}'s eyeing your stuff", "{name}'s paws are twitching", "{name}'s at the door"];
+  // The raccoon's face for each trouble level: 0 calm, 1-2 sneaky, 3+ feral.
+  const COON_MOODS = { calm: 'icons/raccoon/calm.webp', sneaky: 'icons/raccoon/sneaky.webp', feral: 'icons/raccoon/feral.webp' };
+  const moodFor = (level) => (level >= 3 ? 'feral' : level >= 1 ? 'sneaky' : 'calm');
   const COON_QUICK_MINS = 5;
   const COON_STEP_MINS = 5; // each planned raid, and each break
   const COON_BLOCK = 6;     // raids per half hour; a break follows every block
@@ -5291,6 +5300,7 @@ body.is-shake .wrap { animation: shake .4s; }
     coonEl.dataset.mode = coon.mode;
     coonEl.style.setProperty('--chaos', String(quick && !coonDone ? Math.min(coon.extra, 40) : 0));
     coonEl.classList.toggle('is-wild', quick && level >= 3);
+    setMood(moodFor(level));
     if (quick) {
       const into = coon.extra % 5;
       $('coon-trouble-level').textContent = String(level);
@@ -5312,7 +5322,24 @@ body.is-shake .wrap { animation: shake .4s; }
     coonChip.setAttribute('aria-label', coonDone ? `${name}: time's up. Open it` : `${name}: ${time} left. Open it`);
     document.title = coonDone ? `Time's up! · ${baseTitle}` : `${paused ? '⏸ ' : ''}${time} · ${baseTitle}`;
   }
+  function setMood(mood) {
+    if (coonEl.dataset.mood === mood) return;
+    const face = $('coon-face');
+    const swap = !!coonEl.dataset.mood && !coonEl.hidden;
+    coonEl.dataset.mood = mood;
+    face.firstChild.src = COON_MOODS[mood];
+    face.classList.remove('is-swap');
+    if (swap && !reduceMotion()) { void face.offsetWidth; face.classList.add('is-swap'); }
+  }
+  // Fetch all three faces up front, so a mood change never shows a blank.
+  let moodsLoaded = false;
+  function preloadMoods() {
+    if (moodsLoaded) return;
+    moodsLoaded = true;
+    Object.values(COON_MOODS).forEach((src) => { const img = new Image(); img.src = src; });
+  }
   function showCoon(focus = true) {
+    preloadMoods();
     const shrunk = coon.shrunk && !coonDone;
     setCoonOpen(!shrunk);
     coonChip.hidden = !shrunk;
@@ -5501,9 +5528,10 @@ body.is-shake .wrap { animation: shake .4s; }
 
   coonChip.append(iconEl(RACCOON), h('span'));
   coonBtn.append(iconEl(RACCOON));
-  $('coon-face').append(iconEl(RACCOON));
-  $('coon-avatar').append(iconEl(RACCOON));
-  $('coon-quick-go').prepend(iconEl(RACCOON));
+  const moodImg = (mood) => h('img', { src: COON_MOODS[mood], alt: '', width: '512', height: '512', decoding: 'async' });
+  $('coon-face').append(moodImg('calm'));
+  $('coon-avatar').append(moodImg('calm'));
+  $('coon-quick-go').prepend(moodImg('sneaky'));
   paintNames();
   // The icon opens the timer picker; with a timer already running it brings that timer back instead.
   coonBtn.addEventListener('click', () => { if (coon) reopenCoon(); else openPicker(); });
