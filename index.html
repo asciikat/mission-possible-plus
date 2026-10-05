@@ -8,7 +8,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Possible+">
-<title>Mission Possible Plus</title>
+<title>Mission Possible Pro</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
@@ -707,6 +707,18 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
 #tab-tomorrow[aria-selected="true"]::after { background: var(--dusk); }
 #tab-calendar[aria-selected="true"]::after { background: var(--palm); }
 #tab-hood[aria-selected="true"]::after { background: var(--gold); }
+/* Missions: Now, Tomoz and Jail sit in their own smaller row, shown only while Missions is open,
+   next to the same Full screen button the other tabs have */
+.mission-bar {
+  align-items: flex-end;
+  padding: 0 16px;
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+.mission-bar .frame-btn { align-self: center; flex: none; }
+.subtabs { gap: 18px; min-width: 0; }
+.subtabs .tab { padding: 10px 0; font-size: 22px; }
 /* four tabs on a small phone: scroll sideways rather than squash */
 .tabs { overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
 .tabs::-webkit-scrollbar { display: none; }
@@ -752,6 +764,16 @@ button:focus-visible, input:focus-visible, summary:focus-visible, a:focus-visibl
   background: #070912;
 }
 .frame-panel.is-full .frame-bar { flex: none; padding-block: 10px; }
+.frame-panel.is-full .mission-bar { padding-block: 0; }
+.frame-panel.is-full .frame-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  background: var(--asphalt);
+}
+.frame-panel.is-full .frame-body > * { max-width: 900px; margin-inline: auto; }
+#missions-panel.is-full .frame-body > .empty { margin-inline: max(12px, calc((100% - 900px) / 2)); }
 .frame-panel.is-full iframe { flex: 1; height: auto !important; min-height: 0; }
 .frame-open body { overflow: hidden; }
 /* the Hood tab: The Hood (../homies/) in a frame, tall enough to use the map and scroll inside */
@@ -1995,6 +2017,9 @@ body.is-shake .wrap { animation: shake .4s; }
   .board-head { padding: 4px 12px 0; }
   .tabs { gap: 16px; }
   .tab { gap: 6px; padding: 8px 0 10px; font-size: 22px; }
+  .mission-bar { padding: 0 12px; }
+  .subtabs .tab { padding: 8px 0; font-size: 19px; }
+  .mission-bar .frame-btn { min-height: 32px; padding: 0 9px; }
   .count { min-width: 20px; padding: 3px 5px; font-size: 12px; }
   .composer { padding: 10px 12px 0; }
   .dock-row { padding: 4px; }
@@ -2021,10 +2046,14 @@ body.is-shake .wrap { animation: shake .4s; }
   .pay { font-size: 22px; }
   .add-btn { padding: 0 14px 0 12px; }
 }
-/* up to seven tabs on a phone: keep them compact; the row scrolls sideways if needed */
+/* small phones: keep the tabs compact; a row scrolls sideways if needed */
 @media (max-width: 430px) {
-  .tabs { gap: 9px; }
-  .tab { gap: 4px; font-size: 17px; }
+  .tabs { gap: 12px; }
+  .tab { gap: 4px; font-size: 19px; }
+  .subtabs .tab { font-size: 16px; }
+  #top-tabs { gap: 11px; }
+  #top-tabs .tab { font-size: 17px; }
+  .mission-bar .frame-btn span { display: none; }
   .count { min-width: 17px; padding: 2px 4px; font-size: 11px; }
   .stash { gap: 6px; }
   .icon-btn { width: 34px; height: 34px; }
@@ -2035,6 +2064,10 @@ body.is-shake .wrap { animation: shake .4s; }
 }
 @media (min-width: 720px) {
   .tab-panel { padding: 14px 20px 22px; }
+}
+@media (max-width: 370px) {
+  #top-tabs { gap: 9px; }
+  #top-tabs .tab { font-size: 15px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2066,7 +2099,7 @@ body.is-shake .wrap { animation: shake .4s; }
         <span class="cash" id="total-cash">$0</span>
         <span class="stars" id="stars" role="img" aria-label="Heat level 0 of 5"></span>
       </div>
-      <button class="icon-btn icon-btn--install" id="install-hud" type="button" aria-label="Install Mission Possible Plus as an app" title="Install app" hidden>
+      <button class="icon-btn icon-btn--install" id="install-hud" type="button" aria-label="Install Mission Possible Pro as an app" title="Install app" hidden>
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></svg>
       </button>
       <button class="icon-btn" id="coon-btn" type="button" aria-haspopup="dialog" aria-label="Raccoon timers" title="Raccoon timers"></button>
@@ -2082,7 +2115,7 @@ body.is-shake .wrap { animation: shake .4s; }
   <section class="hero" aria-labelledby="board-title">
     <canvas class="hero-sky" id="hero-sky" aria-hidden="true"></canvas>
     <span class="hero-eyebrow"><span class="live-dot" aria-hidden="true"></span><span id="hero-date">Today</span></span>
-    <h1 id="board-title">Mission <span class="grad">Possible</span> <span class="plus-badge">Plus</span></h1>
+    <h1 id="board-title">Mission <span class="grad">Possible</span> <span class="plus-badge">Pro</span></h1>
     <p class="hero-tag">Every job pays. Even the tiny ones. Now with your Hood.</p>
   </section>
 
@@ -2172,7 +2205,7 @@ body.is-shake .wrap { animation: shake .4s; }
           <div class="rate--gold"><dt>Big score prep step</dt><dd>$25</dd></div>
           <div class="rate--gold"><dt>The big score</dt><dd>$500</dd></div>
         </dl>
-        <p class="intel-note">At day 14 the Five-0 come knocking. Every 5 wins scores a heist. Tap a job's stars to raise its wanted level and jump it up the list; stars cool off at 7 AM. Tomorrow's jobs land at 7 AM and start fresh. The big score never ages.</p>
+        <p class="intel-note">At day 14 the Five-0 come knocking. Every 5 wins scores a heist. Tap a job's stars to raise its wanted level and jump it up the list; stars cool off at 7 AM. Tomoz jobs land on Now at 7 AM and start fresh. The big score never ages.</p>
         <h3 class="eyebrow">Rank ladder</h3>
         <ol class="ladder" id="ladder"></ol>
       </section>
@@ -2180,18 +2213,28 @@ body.is-shake .wrap { animation: shake .4s; }
 
     <section class="panel board" aria-label="Jobs">
       <div class="board-head">
-        <div class="tabs" role="tablist" aria-label="Job lists">
-          <button class="tab" id="tab-active" role="tab" type="button" aria-selected="true" aria-controls="active-list">Today <span class="count" id="count-active">0</span></button>
-          <button class="tab" id="tab-tomorrow" role="tab" type="button" aria-selected="false" aria-controls="tomorrow-list" tabindex="-1">Tomorrow <span class="count" id="count-tomorrow">0</span></button>
-          <button class="tab" id="tab-jail" role="tab" type="button" aria-selected="false" aria-controls="jail-list" tabindex="-1">Jail <span class="count" id="count-jail">0</span></button>
+        <div class="tabs" id="top-tabs" role="tablist" aria-label="Apps">
+          <button class="tab" id="tab-missions" role="tab" type="button" aria-selected="true" aria-controls="missions-panel">Missions <span class="count" id="count-missions">0</span></button>
           <button class="tab" id="tab-calendar" role="tab" type="button" aria-selected="false" aria-controls="calendar-panel" tabindex="-1">Ezycal</button>
           <button class="tab" id="tab-hood" role="tab" type="button" aria-selected="false" aria-controls="hood-panel" tabindex="-1">Hood</button>
           <button class="tab" id="tab-notes" role="tab" type="button" aria-selected="false" aria-controls="notes-panel" tabindex="-1">Notes</button>
         </div>
       </div>
 
+      <!-- Missions: the job board. Now, Tomoz and Jail only show once Missions is open. -->
+      <div class="missions-panel frame-panel" id="missions-panel" role="tabpanel" aria-labelledby="tab-missions" data-name="Missions">
+      <div class="frame-bar mission-bar">
+        <div class="tabs subtabs" id="mission-tabs" role="tablist" aria-label="Job lists">
+          <button class="tab" id="tab-active" role="tab" type="button" aria-selected="true" aria-controls="active-list">Now <span class="count" id="count-active">0</span></button>
+          <button class="tab" id="tab-tomorrow" role="tab" type="button" aria-selected="false" aria-controls="tomorrow-list" tabindex="-1">Tomoz <span class="count" id="count-tomorrow">0</span></button>
+          <button class="tab" id="tab-jail" role="tab" type="button" aria-selected="false" aria-controls="jail-list" tabindex="-1">Jail <span class="count" id="count-jail">0</span></button>
+        </div>
+        <button class="frame-btn" type="button" data-full="missions-panel" aria-label="Show Missions full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Full screen</span></button>
+      </div>
+      <div class="frame-body">
+
       <form class="composer" id="mission-form" autocomplete="off">
-        <label class="sr-only" for="mission-input" id="mission-label">New job for today</label>
+        <label class="sr-only" for="mission-input" id="mission-label">New job for Now</label>
         <div class="dock-row">
           <input type="text" id="mission-input" maxlength="140" enterkeyhint="done" placeholder="e.g. take meds">
           <button type="submit" class="add-btn" id="add-btn">
@@ -2223,7 +2266,7 @@ body.is-shake .wrap { animation: shake .4s; }
         <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round" aria-hidden="true"><path d="M38 28.5A15 15 0 0119.5 10a15 15 0 1018.5 18.5z"/><path d="M33 8v6M30 11h6" stroke-linecap="round"/></svg>
         <div>
           <h3>Nothing lined up</h3>
-          <p>Add jobs for tomorrow. They land on today's board at 7 AM.</p>
+          <p>Add jobs to Tomoz. They land on Now at 7 AM.</p>
         </div>
       </div>
 
@@ -2235,23 +2278,27 @@ body.is-shake .wrap { animation: shake .4s; }
           <p>Jobs land here after 7 days. Break them out for $50 and lose the heat.</p>
         </div>
       </div>
+      </div>
+      </div>
 
       <!-- The calendar is its own page (../calendar/), shown here in a frame. It loads the
            first time you open the tab, and keeps its own data, so it can't disturb the board. -->
-      <div class="calendar-panel frame-panel" id="calendar-panel" role="tabpanel" aria-labelledby="tab-calendar" hidden>
+      <div class="calendar-panel frame-panel" id="calendar-panel" role="tabpanel" aria-labelledby="tab-calendar" data-name="Ezycal" hidden>
         <div class="frame-bar"><span>Ezycal</span><button class="frame-btn" type="button" data-full="calendar-panel" aria-label="Show Ezycal full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Full screen</span></button></div>
         <iframe id="calendar-frame" title="Ezycal" loading="lazy"></iframe>
       </div>
 
       <!-- The Hood is its own app (../homies/), shown here in a frame. It loads the first
            time you open the tab. Your homies are the same ones as in the standalone Hood. -->
-      <div class="hood-panel frame-panel" id="hood-panel" role="tabpanel" aria-labelledby="tab-hood" hidden>
+      <div class="hood-panel frame-panel" id="hood-panel" role="tabpanel" aria-labelledby="tab-hood" data-name="The Hood" hidden>
         <div class="frame-bar"><span>The Hood</span><button class="frame-btn" type="button" data-full="hood-panel" aria-label="Show The Hood full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Full screen</span></button></div>
         <iframe id="hood-frame" title="The Hood" loading="lazy"></iframe>
       </div>
 
       <!-- Notes: saved on this device as you type. -->
-      <div class="tab-panel notes-panel" id="notes-panel" role="tabpanel" aria-labelledby="tab-notes" hidden>
+      <div class="notes-panel frame-panel" id="notes-panel" role="tabpanel" aria-labelledby="tab-notes" data-name="Notes" hidden>
+        <div class="frame-bar"><span>Notes</span><button class="frame-btn" type="button" data-full="notes-panel" aria-label="Show Notes full screen"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg><span>Full screen</span></button></div>
+        <div class="frame-body tab-panel">
         <form class="note-form" id="note-form" autocomplete="off">
           <label class="sr-only" for="note-input">New note</label>
           <textarea id="note-input" rows="2" maxlength="5000" placeholder="Jot it down before it's gone"></textarea>
@@ -2270,6 +2317,7 @@ body.is-shake .wrap { animation: shake .4s; }
             <h3>No notes yet</h3>
             <p>Phone numbers, ideas, the thing you'll forget in five minutes. Edit any note by tapping it.</p>
           </div>
+        </div>
         </div>
       </div>
 
@@ -2459,7 +2507,7 @@ body.is-shake .wrap { animation: shake .4s; }
         <span class="board-bar-text" id="coon-plan-bar"></span>
         <button class="pick-btn" id="coon-plan-fill" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6.5 12.5L12 18l5.5-5.5"/></svg>
-          From Today
+          From Now
         </button>
       </div>
       <p class="coon-plan-msg" id="coon-plan-msg" aria-live="polite"></p>
@@ -2550,7 +2598,7 @@ body.is-shake .wrap { animation: shake .4s; }
   const STARTER_JOBS = [
     'Tap the circle to finish this job and get paid',
     'Tap the stars to make a job urgent. More stars, higher up the list',
-    'Tap this text to push it to tomorrow or drop it',
+    'Tap this text to push it to Tomoz or drop it',
     "Add one tiny job of your own (even 'drink water' counts)",
   ];
 
@@ -2605,7 +2653,7 @@ body.is-shake .wrap { animation: shake .4s; }
   // A heist that finished while the page was closed has already been paid out.
   if (visibleCompletedMissions.length >= HEIST_SIZE) visibleCompletedMissions = [];
 
-  let currentTab = 'active'; // active (today) | tomorrow | jail | calendar | hood | notes
+  let currentTab = 'active'; // active (Now) | tomorrow (Tomoz) | jail | calendar | hood | notes
   let openTray = null;       // which job's action tray is open, e.g. "job-123"
   let ideaIndex = 0;
   const landedIds = new Set();
@@ -2638,11 +2686,17 @@ body.is-shake .wrap { animation: shake .4s; }
     notes: $('tab-notes'),
   };
   const TAB_NAME = {
-    active: 'Today', tomorrow: 'Tomorrow', jail: 'Jail', calendar: 'Ezycal', hood: 'Hood',
+    active: 'Now', tomorrow: 'Tomoz', jail: 'Jail', calendar: 'Ezycal', hood: 'Hood',
     notes: 'Notes',
   };
   // Tabs that show their own panel instead of a job list.
   const PANEL_TABS = { calendar: $('calendar-panel'), hood: $('hood-panel'), notes: $('notes-panel') };
+  // Now, Tomoz and Jail live inside the Missions tab; the top row is Missions, Ezycal, Hood, Notes.
+  const MISSION_TABS = ['active', 'tomorrow', 'jail'];
+  const isMissionTab = (tab) => MISSION_TABS.includes(tab);
+  const tabMissions = $('tab-missions');
+  const missionsPanel = $('missions-panel');
+  let lastMissionTab = 'active'; // the list Missions opens on
   // Tabs switched off with the gear. Kept per device, like mute.
   let tabsOff = (Array.isArray(store.get('mp_tabs_off', [])) ? store.get('mp_tabs_off', []) : [])
     .filter((t) => TAB_ORDER.includes(t));
@@ -3190,7 +3244,7 @@ body.is-shake .wrap { animation: shake .4s; }
           stars)),
       h('div', { class: 'job-tray', id: `tray-${key}`, hidden: !open },
         heat ? h('button', { class: 'tray-btn', type: 'button', 'data-act': 'cool' }, iconEl(ICON.star), 'Reset stars') : null,
-        jail ? null : h('button', { class: 'tray-btn tray-btn--dusk', type: 'button', 'data-act': 'tomorrow' }, iconEl(ICON.moon), 'Push to tomorrow'),
+        jail ? null : h('button', { class: 'tray-btn tray-btn--dusk', type: 'button', 'data-act': 'tomorrow' }, iconEl(ICON.moon), 'Push to Tomoz'),
         isTabOn('notes') ? h('button', { class: 'tray-btn tray-btn--note', type: 'button', 'data-act': 'note' }, iconEl(ICON.note), 'Move to notes') : null,
         h('button', { class: 'tray-btn tray-btn--danger', type: 'button', 'data-act': 'drop' }, iconEl(ICON.x), 'Drop job'),
       ),
@@ -3204,13 +3258,13 @@ body.is-shake .wrap { animation: shake .4s; }
     if (m.id === justAddedId) cls.push('is-new');
     if (open) cls.push('is-open');
     return h('li', { class: cls.join(' '), 'data-id': String(m.id) },
-      h('button', { class: 'job-done', type: 'button', 'data-act': 'today', 'aria-label': `Move "${m.text}" to today`, icon: ICON.sunrise }),
+      h('button', { class: 'job-done', type: 'button', 'data-act': 'today', 'aria-label': `Move "${m.text}" to Now`, icon: ICON.sunrise }),
       h('button', { class: 'job-body', type: 'button', 'data-act': 'toggle', 'aria-expanded': String(open), 'aria-controls': `tray-${key}` },
         h('span', { class: 'job-text' }, m.text),
         h('span', { class: 'job-meta' }, iconEl(ICON.moon), h('span', { class: 'job-age' }, `Lands ${landLabel(m.startsAt)}`))),
       h('span', { class: 'pay' }, money(calculateReward(0))),
       h('div', { class: 'job-tray', id: `tray-${key}`, hidden: !open },
-        h('button', { class: 'tray-btn', type: 'button', 'data-act': 'today' }, iconEl(ICON.sunrise), 'Do it today'),
+        h('button', { class: 'tray-btn', type: 'button', 'data-act': 'today' }, iconEl(ICON.sunrise), 'Do it now'),
         isTabOn('notes') ? h('button', { class: 'tray-btn tray-btn--note', type: 'button', 'data-act': 'note' }, iconEl(ICON.note), 'Move to notes') : null,
         h('button', { class: 'tray-btn tray-btn--danger', type: 'button', 'data-act': 'drop' }, iconEl(ICON.x), 'Drop job'),
       ),
@@ -3237,6 +3291,12 @@ body.is-shake .wrap { animation: shake .4s; }
     // A tab switched off with the gear can't be the open one: fall back to the first one shown.
     if (!isTabOn(currentTab)) { currentTab = shownTabs()[0]; openTray = null; }
     TAB_ORDER.forEach((tab) => { TAB_EL[tab].hidden = !isTabOn(tab); });
+    const onMissions = isMissionTab(currentTab);
+    if (onMissions) lastMissionTab = currentTab;
+    tabMissions.hidden = !MISSION_TABS.some(isTabOn);
+    tabMissions.setAttribute('aria-selected', String(onMissions));
+    tabMissions.tabIndex = onMissions ? 0 : -1;
+    missionsPanel.hidden = !onMissions;
     const active = [];
     const jail = [];
     let five0 = false;
@@ -3282,6 +3342,7 @@ body.is-shake .wrap { animation: shake .4s; }
     if (currentTab === 'notes') renderNotes();
 
     $('count-active').textContent = String(active.length);
+    $('count-missions').textContent = String(active.length);
     $('count-tomorrow').textContent = String(lined.length);
     const jailCount = $('count-jail');
     jailCount.textContent = String(jail.length);
@@ -3299,8 +3360,8 @@ body.is-shake .wrap { animation: shake .4s; }
     const onTomorrow = currentTab === 'tomorrow';
     form.hidden = currentTab === 'jail';
     form.classList.toggle('composer--tomorrow', onTomorrow);
-    $('mission-label').textContent = onTomorrow ? 'New job for tomorrow' : 'New job for today';
-    if (onTomorrow) input.placeholder = 'Line up a job for tomorrow';
+    $('mission-label').textContent = onTomorrow ? 'New job for Tomoz' : 'New job for Now';
+    if (onTomorrow) input.placeholder = 'Line up a job for Tomoz';
     else if (input.placeholder.startsWith('Line up')) input.placeholder = `e.g. ${PLACEHOLDER_IDEAS[ideaIndex]}`;
 
     // one-line summary + pick-for-me
@@ -3739,7 +3800,7 @@ body.is-shake .wrap { animation: shake .4s; }
     };
     animateOut(card, 'is-dropped', () => {
       renderUI();
-      toast('Pushed to tomorrow', { action: 'Undo', onAction: undo, duration: 5000 });
+      toast('Pushed to Tomoz', { action: 'Undo', onAction: undo, duration: 5000 });
     });
   }
 
@@ -3758,7 +3819,7 @@ body.is-shake .wrap { animation: shake .4s; }
     renderUI();
     sfx.add();
     haptic(12);
-    toast('Moved to today', { amount: `pays ${money(calculateReward(0))}` });
+    toast('Moved to Now', { amount: `pays ${money(calculateReward(0))}` });
   }
 
   function dropTomorrow(id, card) {
@@ -4281,11 +4342,12 @@ body.is-shake .wrap { animation: shake .4s; }
   });
 
   function setTab(tab, focus) {
+    if (tab === 'missions') tab = isTabOn(lastMissionTab) ? lastMissionTab : MISSION_TABS.find(isTabOn);
     const changed = tab !== currentTab;
     currentTab = tab;
     openTray = null;
     renderBoard();
-    if (focus) TAB_EL[tab].focus();
+    if (focus) (focus === 'top' && isMissionTab(tab) ? tabMissions : TAB_EL[tab]).focus();
     // Ezycal and Hood: size the frame to the screen and line it up under the top bar,
     // so everything inside (sheets, buttons) stays on screen
     if (changed && (tab === 'calendar' || tab === 'hood')) {
@@ -4296,13 +4358,23 @@ body.is-shake .wrap { animation: shake .4s; }
     }
   }
   TAB_ORDER.forEach((tab) => TAB_EL[tab].addEventListener('click', () => setTab(tab)));
-  tabActive.parentElement.addEventListener('keydown', (e) => {
+  tabMissions.addEventListener('click', () => setTab('missions'));
+  // Arrow keys: the top row steps through Missions, Ezycal, Hood, Notes; the Missions row
+  // steps through Now, Tomoz, Jail.
+  $('top-tabs').addEventListener('keydown', (e) => {
     if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
     e.preventDefault();
     const step = e.key === 'ArrowRight' ? 1 : -1;
-    const shown = shownTabs();
-    const next = shown[(shown.indexOf(currentTab) + step + shown.length) % shown.length];
-    setTab(next, true);
+    const shown = ['missions', ...Object.keys(PANEL_TABS)].filter((t) => (t === 'missions' ? !tabMissions.hidden : isTabOn(t)));
+    const here = isMissionTab(currentTab) ? 'missions' : currentTab;
+    setTab(shown[(shown.indexOf(here) + step + shown.length) % shown.length], 'top');
+  });
+  $('mission-tabs').addEventListener('keydown', (e) => {
+    if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+    e.preventDefault();
+    const step = e.key === 'ArrowRight' ? 1 : -1;
+    const shown = MISSION_TABS.filter(isTabOn);
+    setTab(shown[(shown.indexOf(currentTab) + step + shown.length) % shown.length], true);
   });
 
   pickBtn.addEventListener('click', pickForMe);
@@ -4498,7 +4570,7 @@ body.is-shake .wrap { animation: shake .4s; }
     window.addEventListener('appinstalled', () => {
       deferred = null;
       hide();
-      toast('Installed · find Mission Possible Plus on your home screen');
+      toast('Installed · find Mission Possible Pro on your home screen');
     });
 
     function steps() {
@@ -4519,7 +4591,7 @@ body.is-shake .wrap { animation: shake .4s; }
       return [
         'Use <b>Chrome</b> or <b>Edge</b>.',
         'Click the <b>install icon</b> at the right of the address bar, or open the browser menu.',
-        'Choose <b>Install Mission Possible Plus</b>.',
+        'Choose <b>Install Mission Possible Pro</b>.',
       ];
     }
 
@@ -4840,8 +4912,8 @@ body.is-shake .wrap { animation: shake .4s; }
       h('div', { class: 'note-foot' },
         h('time', null, stamp(n.updatedAt)),
         h('span', { class: 'note-actions' },
-          isTabOn('active') ? h('button', { class: 'note-move', type: 'button', 'data-to': 'today', 'aria-label': 'Make this a job for today' }, iconEl(ICON.sunrise), 'Today') : null,
-          isTabOn('tomorrow') ? h('button', { class: 'note-move note-move--dusk', type: 'button', 'data-to': 'tomorrow', 'aria-label': 'Line this up for tomorrow' }, iconEl(ICON.moon), 'Tomorrow') : null,
+          isTabOn('active') ? h('button', { class: 'note-move', type: 'button', 'data-to': 'today', 'aria-label': 'Make this a job for Now' }, iconEl(ICON.sunrise), 'Now') : null,
+          isTabOn('tomorrow') ? h('button', { class: 'note-move note-move--dusk', type: 'button', 'data-to': 'tomorrow', 'aria-label': 'Line this up for Tomoz' }, iconEl(ICON.moon), 'Tomoz') : null,
           h('button', { class: 'note-del', type: 'button', 'aria-label': 'Delete note', icon: ICON.x }))));
   }
   function renderNotes() {
@@ -4923,7 +4995,7 @@ body.is-shake .wrap { animation: shake .4s; }
     renderUI();
     sfx.add();
     haptic(12);
-    toast(when === 'tomorrow' ? `Lined up · lands ${landLabel(job.startsAt)}` : 'Moved to today', {
+    toast(when === 'tomorrow' ? `Lined up · lands ${landLabel(job.startsAt)}` : 'Moved to Now', {
       action: 'Undo',
       duration: 6000,
       onAction: () => {
@@ -5008,6 +5080,7 @@ body.is-shake .wrap { animation: shake .4s; }
     const headH = document.querySelector('.board-head').offsetHeight;
     document.querySelectorAll('.frame-panel').forEach((panel) => {
       const frame = panel.querySelector('iframe');
+      if (!frame) return; // Missions and Notes grow with their content
       const full = panel.classList.contains('is-full');
       frame.dataset.coverTop = full ? '0' : String(hudBottom);
       if (!full) frame.style.height = `${Math.max(460, window.innerHeight - hudBottom - headH - panel.querySelector('.frame-bar').offsetHeight - 4)}px`;
@@ -5016,7 +5089,7 @@ body.is-shake .wrap { animation: shake .4s; }
   window.addEventListener('resize', fitFrames);
   fitFrames();
 
-  // ── Full screen for the Ezycal and Hood tabs (like raccoon mode) ───────
+  // ── Full screen for every tab: Missions, Ezycal, Hood, Notes (like raccoon mode) ──
   // The tab covers the whole page, and where the browser allows it, the screen too.
   // Shrink, Esc, or leaving the tab puts it back.
   (() => {
@@ -5029,7 +5102,7 @@ body.is-shake .wrap { animation: shake .4s; }
     function setButton(panel, full){
       tellHood(panel, full);
       const btn = panel.querySelector('[data-full]');
-      const name = panel.querySelector('.frame-bar span').textContent;
+      const name = panel.dataset.name;
       btn.innerHTML = (full ? SHRINK_ICON : FULL_ICON) + `<span>${full ? 'Shrink' : 'Full screen'}</span>`;
       btn.setAttribute('aria-label', full ? `Shrink ${name}` : `Show ${name} full screen`);
     }
@@ -5048,7 +5121,10 @@ body.is-shake .wrap { animation: shake .4s; }
       document.documentElement.classList.add('frame-open');
       setButton(panel, true);
       fitFrames();
-      if (panel.requestFullscreen) panel.requestFullscreen({navigationUI: 'hide'}).catch(() => {});
+      // Missions and Notes take the whole page into real full screen (not just the panel), so
+      // toasts, Undo and the heist overlay still show over them
+      const target = panel.querySelector('iframe') ? panel : document.documentElement;
+      if (target.requestFullscreen) target.requestFullscreen({navigationUI: 'hide'}).catch(() => {});
     }
     document.querySelectorAll('[data-full]').forEach((btn) => btn.addEventListener('click', () => {
       const panel = $(btn.dataset.full);
@@ -5641,8 +5717,8 @@ body.is-shake .wrap { animation: shake .4s; }
     }
     savePlan();
     renderPlan();
-    if (added) { sfx.add(); planMsg(`Added ${added} job${added === 1 ? '' : 's'} from Today`); }
-    else planMsg(!today.length ? 'Nothing on Today yet' : coonPlan.length >= COON_PLAN_MAX ? 'Full: that\'s an hour of raids' : "Today's jobs are already in");
+    if (added) { sfx.add(); planMsg(`Added ${added} job${added === 1 ? '' : 's'} from Now`); }
+    else planMsg(!today.length ? 'Nothing on Now yet' : coonPlan.length >= COON_PLAN_MAX ? 'Full: that\'s an hour of raids' : "Your Now jobs are already in");
   });
   $('coon-plan-clear').addEventListener('click', () => {
     const was = coonPlan;

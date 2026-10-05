@@ -1,7 +1,7 @@
 {
-  "name": "Mission Possible Plus",
-  "short_name": "Possible+",
-  "description": "A gamified to-do board with a calendar and The Hood: every job pays.",
+  "name": "Mission Possible Pro",
+  "short_name": "Possible Pro",
+  "description": "A gamified all-in-one: Missions, a calendar, The Hood and notes. Every job pays.",
   "id": "./",
   "start_url": "./",
   "scope": "./",

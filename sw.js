@@ -1,8 +1,8 @@
-// Mission Possible Plus service worker: makes the app installable and lets it open offline.
-// Its saved copy is named mpplus-*, so it never clashes with Mission Possible's own on the same site.
+// Mission Possible Pro service worker: makes the app installable and lets it open offline.
+// Its saved copy is named mppro-*, so it never clashes with Mission Possible's or Plus's on the same site.
 // Pages are fetched fresh when online (so updates arrive) and fall back to the
 // last saved copy when offline. Sign-in and database traffic are never touched.
-const CACHE = 'mpplus-v1';
+const CACHE = 'mppro-v1';
 const SHELL = ['./', 'index.html', 'firebase-config.js', 'manifest.webmanifest',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
   'icons/raccoon/calm.webp', 'icons/raccoon/sneaky.webp', 'icons/raccoon/feral.webp'];
@@ -14,7 +14,7 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('mpplus-') && k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('mppro-') && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   );
 });

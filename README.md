@@ -1,14 +1,26 @@
-# Mission Possible Plus
+# Mission Possible Pro
 
-Mission Possible, plus **The Hood**. Everything from the Mission Board to-do list
-and its **Ezycal** calendar tab, with a new **Hood** tab: the GTA-style map of
-your homies from [asciikat/homies](https://github.com/asciikat/homies).
+Mission Possible as an all-in-one: the to-do board, the **Ezycal** calendar,
+**The Hood** (the GTA-style map of your homies from
+[asciikat/homies](https://github.com/asciikat/homies)) and **Notes**, each one
+tab away. Built on Mission Possible Plus.
 
 Single page: `index.html`. The Ezycal tab shows the separate calendar at
 `../calendar/`, and the Hood tab shows The Hood at `../homies/` (both in a frame,
 loaded the first time you open the tab).
 
-Tabs: **Today**, **Tomorrow**, **Jail**, **Ezycal** (the calendar), **Hood** and **Notes**.
+## Tabs
+
+The top row is the apps: **Missions**, **Ezycal**, **Hood** and **Notes**. Only the
+one you tap is shown.
+
+**Missions** is the to-do board. Its own lists only show once you open it:
+
+- **Now**: today's jobs (was "Today")
+- **Tomoz**: jobs lined up for tomorrow; they land on Now at 7 AM (was "Tomorrow")
+- **Jail**: jobs 7 days or older
+
+The count on the Missions tab is how many jobs are on Now.
 
 ## The Hood tab
 
@@ -19,23 +31,25 @@ same ones as in the standalone Hood on that device.
 
 ## Full screen
 
-The Ezycal and Hood tabs each have a **⛶ Full screen** button, like raccoon
-mode. The tab covers the whole screen, and where the browser allows it, hides
-the browser bars too. **Shrink**, Esc, or the phone's back gesture puts it back.
+Every tab has a **⛶ Full screen** button, like raccoon mode: Missions (next to
+Now / Tomoz / Jail), Ezycal, Notes, and The Hood (in its own top bar). The tab
+covers the whole screen, and where the browser allows it, hides the browser bars
+too. **Shrink**, Esc, or the phone's back gesture puts it back. In full screen
+Missions you can still switch between Now, Tomoz and Jail, add jobs and finish
+them; toasts, Undo and the heist celebration show on top.
 
-## Mission Possible Plus vs Mission Possible
+## Mission Possible Pro vs Plus vs Mission Possible
 
-Both apps live on `asciikat.github.io`, so on the same device they share the
+All three live on `asciikat.github.io`, so on the same device they share the
 same board (jobs, cash, notes) and, once you sign in, the same synced board.
-Plus is Mission Possible with the extra tab. They install as two separate apps,
-and Plus keeps its offline copy under its own name (`mpplus-*`) so the two never
-clear each other's. The
+They install as separate apps, and Pro keeps its offline copy under its own name
+(`mppro-*`) so none of them clear each other's. The
 **gear** at the top right switches any tab on or off; hiding a tab never deletes
 what's in it. The **raccoon icon** next to it opens raccoon mode (see below). **The Big
 Score** is the slim gold bar under the banner; tap it to plan it, add prep steps or
 cash it in.
 
-Notes and jobs trade places: each note has **Today** and **Tomorrow** buttons that turn it
+Notes and jobs trade places: each note has **Now** and **Tomoz** buttons that turn it
 into a job (jobs are one line, 140 letters max), and a job's menu (tap its text) has
 **Move to notes**. Every move has Undo.
 
@@ -58,7 +72,7 @@ any time. Three tabs:
   `icons/raccoon/calm.webp`, `sneaky.webp` and `feral.webp` (square, transparent, 512px);
   swap in new art with the same names.
 - **You choose**: any length from 1 minute to 4 hours, with −5 / +5 buttons.
-- **Plan**: line up 5-minute raids like jobs (or pull them in with **From Today**).
+- **Plan**: line up 5-minute raids like jobs (or pull them in with **From Now**).
   Six raids make half an hour, then a 5-minute break; up to 12 raids, an hour. Tap a
   raid to move it earlier, later or remove it. **Start the run** plays them in order:
   the raid you're on shows as a job card, and tapping its circle moves on early.
@@ -71,7 +85,7 @@ each device.
 ## Host free on GitHub Pages
 1. Merge to `main`.
 2. Repo **Settings → Pages → Deploy from a branch → `main` / root → Save**.
-3. Open `https://asciikat.github.io/mission-possible-plus/`.
+3. Open `https://asciikat.github.io/mission-possible-pro/`.
 
 Without sync, your jobs and cash are saved only in each browser. **Save backup**
 / **Merge backup** at the bottom of the page combine two devices by hand: jobs
