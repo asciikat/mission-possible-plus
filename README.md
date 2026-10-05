@@ -53,6 +53,10 @@ any time. Three tabs:
   minute, and every 5 extra minutes a message pops up: it's into your stash, then the
   stash is gone, then it's raiding your fridge, and so on. The messages are the
   `COON_CHAOS` list in `index.html` (`{name}` is the raccoon's name); edit them freely.
+  The raccoon's face changes with the trouble too: calm at first, sneaky once it's into
+  your stash (+5 and +10), feral from the fridge on (+15). The three faces are
+  `icons/raccoon/calm.webp`, `sneaky.webp` and `feral.webp` (square, transparent, 512px);
+  swap in new art with the same names.
 - **You choose**: any length from 1 minute to 4 hours, with −5 / +5 buttons.
 - **Plan**: line up 5-minute raids like jobs (or pull them in with **From Today**).
   Six raids make half an hour, then a 5-minute break; up to 12 raids, an hour. Tap a
