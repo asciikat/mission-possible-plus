@@ -83,10 +83,18 @@ changes show up on the other one within a few seconds. About 10 minutes, once.
        match /boards/{uid} {
          allow read, write: if request.auth != null && request.auth.uid == uid;
        }
+       match /homies/{uid} {
+         allow read, write: if request.auth != null && request.auth.uid == uid;
+       }
+       match /calendar/{uid} {
+         allow read, write: if request.auth != null && request.auth.uid == uid;
+       }
      }
    }
    ```
-   This makes each board readable and writable only by the Google account that owns it.
+   This makes each board, Hood and calendar readable and writable only by the Google account that owns it.
+   The same rules are in `firestore.rules`. The `homies` and `calendar` lines are what turn on sync for
+   The Hood and Ezycal.
 6. Click the **gear → Project settings → Your apps → Web (`</>`)**, register an
    app called `Mission Board` (no Firebase Hosting needed), and copy the
    `firebaseConfig = { ... }` values it shows.
@@ -103,6 +111,11 @@ How sync combines changes: new jobs from either device are added; finished,
 dropped or moved jobs disappear everywhere; the newest star change wins; cash,
 wins and heists keep the higher number. Undoable actions (drop, reset stars,
 call off a big score) wait about 6 seconds before syncing so Undo still works.
+
+### Hood and Ezycal sync too
+The Hood (`homies/{uid}`) and Ezycal (`calendar/{uid}`) sync through the same Firebase project and the same
+Google sign-in. Sign in once with **Sign in to sync** on the board and both tabs pick it up; each also has
+its own sign-in when opened on its own. Nothing to configure beyond the two rules above.
 
 Optional: drop your own jingle next to `index.html` as
 `Mission_passed_jingl_#2-1783759697834.mp3`; otherwise a built-in fanfare plays.
