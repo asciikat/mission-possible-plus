@@ -31,9 +31,7 @@ Plus is Mission Possible with the extra tab. They install as two separate apps,
 and Plus keeps its offline copy under its own name (`mpplus-*`) so the two never
 clear each other's. The
 **gear** at the top right switches any tab on or off; hiding a tab never deletes
-what's in it. The **raccoon icon** next to it opens raccoon mode: one-tap 5, 10 and
-15 minute timers plus a custom one, which fill the whole screen while they run
-(Shrink tucks one into a corner chip; tap the icon to bring it back). **The Big
+what's in it. The **raccoon icon** next to it opens raccoon mode (see below). **The Big
 Score** is the slim gold bar under the banner; tap it to plan it, add prep steps or
 cash it in.
 
@@ -43,6 +41,31 @@ into a job (jobs are one line, 140 letters max), and a job's menu (tap its text)
 
 Notes sync between devices and are included in Save/Merge backup (newest edit wins; a
 deleted note stays deleted). Tab choices and the running timer stay on each device.
+
+## Raccoon mode
+
+The raccoon icon opens the timers, laid out like the board. The first time, it asks you
+to name your raccoon (**Rackem** unless you pick something else); **Rename** changes it
+any time. Three tabs:
+
+- **5 min**: one tap starts a 5-minute quick raid and goes full screen. The
+  **+1 min** box adds a minute at a time, but the raccoon gets wilder with every
+  minute, and every 5 extra minutes a message pops up: it's into your stash, then the
+  stash is gone, then it's raiding your fridge, and so on. The messages are the
+  `COON_CHAOS` list in `index.html` (`{name}` is the raccoon's name); edit them freely.
+  The raccoon's face changes with the trouble too: calm at first, sneaky once it's into
+  your stash (+5 and +10), feral from the fridge on (+15). The three faces are
+  `icons/raccoon/calm.webp`, `sneaky.webp` and `feral.webp` (square, transparent, 512px);
+  swap in new art with the same names.
+- **You choose**: any length from 1 minute to 4 hours, with −5 / +5 buttons.
+- **Plan**: line up 5-minute raids like jobs (or pull them in with **From Today**).
+  Six raids make half an hour, then a 5-minute break; up to 12 raids, an hour. Tap a
+  raid to move it earlier, later or remove it. **Start the run** plays them in order:
+  the raid you're on shows as a job card, and tapping its circle moves on early.
+
+Timers fill the whole app while they run (Shrink tucks one into a corner chip; tap it
+or the icon to bring it back). The raccoon's name, your plan and a running timer stay on
+each device.
 
 
 ## Host free on GitHub Pages

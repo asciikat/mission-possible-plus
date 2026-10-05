@@ -1591,38 +1591,9 @@ body.is-shake .wrap { animation: shake .4s; }
 .empty--notes > svg { color: var(--gold); }
 .empty--notes { margin: 12px 0 0; }
 
-/* raccoon mode: big quick-start timers that fill the board */
-.coon-intro { margin: 0 0 12px; color: var(--smog); }
-.coon-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.coon-tile {
-  position: relative;
-  min-height: 150px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-end;
-  gap: 4px;
-  padding: 16px;
-  border: 1px solid rgba(61, 123, 255, .45);
-  background: linear-gradient(160deg, rgba(61, 123, 255, .16), rgba(61, 123, 255, .03));
-  color: var(--ink);
-  text-align: left;
-  cursor: pointer;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
-  transition: transform .12s, background .2s;
-}
-.coon-tile:active { transform: scale(.98); }
-.coon-tile b { font: 900 clamp(56px, 13vw, 92px)/.85 var(--font-display); letter-spacing: -.01em; }
-.coon-tile small { font: 700 14px/1 var(--font-hud); letter-spacing: .14em; text-transform: uppercase; color: #9bb8ff; }
-.coon-tile > svg { position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; color: rgba(155, 184, 255, .55); }
-.coon-tile--custom { cursor: default; border-color: rgba(46, 230, 200, .45); background: linear-gradient(160deg, rgba(46, 230, 200, .13), rgba(46, 230, 200, .02)); }
-.coon-tile--custom small { color: var(--palm); }
-.coon-tile--custom > svg { display: none; }
-.modal--coon { width: min(520px, calc(100% - 32px)); border-color: rgba(61, 123, 255, .45); }
-.modal--coon .eyebrow { color: #9bb8ff; }
-.modal--coon .coon-grid { margin-top: 16px; }
-.modal--coon .coon-tile { min-height: 124px; padding: 12px 14px; }
-#coon-btn { position: relative; color: #9bb8ff; border-color: rgba(61, 123, 255, .45); }
+/* raccoon mode: the picker is laid out like the job board (tabs, composer, job rows), and the
+   running timer fills the screen in the board's night-city colours */
+#coon-btn { position: relative; color: var(--flare); border-color: rgba(255, 155, 61, .45); }
 #coon-btn.is-running::after {
   content: "";
   position: absolute;
@@ -1635,55 +1606,185 @@ body.is-shake .wrap { animation: shake .4s; }
   animation: sirenBadge 1.2s steps(2, jump-none) infinite;
 }
 #coon-btn.is-done::after { background: var(--gold); box-shadow: 0 0 8px var(--gold); }
-.coon-custom { display: flex; align-items: flex-end; gap: 8px; width: 100%; }
-.coon-custom input {
+
+.modal--coon {
+  width: min(560px, calc(100% - 16px));
+  max-height: calc(100dvh - 16px);
+  padding: 0;
+  border-color: rgba(255, 155, 61, .45);
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.modal--coon .eyebrow { color: var(--flare); }
+.coon-head { display: flex; align-items: center; gap: 12px; padding: 16px 16px 6px; }
+.coon-avatar {
+  flex: none;
+  width: 48px;
+  height: 54px;
+  display: grid;
+  place-items: center;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: linear-gradient(160deg, var(--neon), var(--flare));
+  color: var(--shade);
+}
+.coon-avatar img { width: 100%; height: 100%; object-fit: cover; object-position: 50% 30%; transform: scale(1.12); }
+.coon-head-text { flex: 1; min-width: 0; }
+.coon-head-text .eyebrow { margin-bottom: 4px; }
+.modal--coon h2 { margin: 0; font: 900 clamp(28px, 8vw, 36px)/.9 var(--font-display); text-transform: uppercase; overflow-wrap: break-word; }
+.coon-head .pick-btn { border-color: rgba(255, 155, 61, .5); background: rgba(255, 155, 61, .06); color: var(--flare); }
+.coon-head .icon-btn { flex: none; }
+
+/* first open (and Rename): name the raccoon */
+.coon-name { display: flex; flex-direction: column; gap: 10px; padding: 8px 16px 18px; }
+.coon-name .composer { padding: 0; }
+.coon-name-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+.coon-tabs { padding: 4px 16px 0; }
+.coon-tabs .tab { font-size: 26px; }
+.coon-tabs .tab:focus-visible { outline-offset: -2px; }
+#coon-tab-custom[aria-selected="true"]::after { background: var(--palm); }
+#coon-tab-plan[aria-selected="true"]::after { background: var(--gold); }
+.coon-pane { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px 18px; }
+.coon-pane .composer, .coon-pane .board-bar, .coon-pane .jobs { padding: 0; }
+.coon-note { margin: 0; color: var(--smog); font-size: 15px; }
+.coon-note b { color: var(--ink); }
+
+/* 5 min: one big card, like the hero */
+.coon-quick-go {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 6px 14px;
   width: 100%;
+  min-height: 170px;
+  padding: 18px;
+  border: 1px solid rgba(255, 61, 127, .55);
+  background: linear-gradient(160deg, rgba(255, 61, 127, .2), rgba(255, 155, 61, .05)), var(--asphalt-hi);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 22px), calc(100% - 22px) 100%, 0 100%);
+  transition: transform .12s, filter .2s;
+}
+.coon-quick-go:active { transform: scale(.985); }
+.coon-quick-go:focus-visible { outline: none; box-shadow: inset 0 0 0 2px var(--gold); }
+.coon-quick-go > img { position: absolute; top: 10px; right: 12px; width: 76px; height: 76px; filter: drop-shadow(0 4px 0 rgba(5, 4, 10, .7)); }
+.coon-quick-go b {
+  font: 900 clamp(84px, 24vw, 128px)/.8 var(--font-display);
+  letter-spacing: -.01em;
+  transform: skewX(-7deg);
+  transform-origin: left bottom;
+  background: linear-gradient(100deg, var(--neon) 10%, var(--flare) 90%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.coon-quick-go b small { font-size: .4em; }
+.coon-quick-go > span:not(.add-btn) { grid-column: 1; font: 700 13px/1.25 var(--font-hud); letter-spacing: .14em; text-transform: uppercase; color: var(--smog); }
+.coon-quick-go .add-btn { grid-column: 2; grid-row: 1 / span 2; pointer-events: none; }
+
+/* You choose: the composer with − / + */
+.coon-custom .dock-row { align-items: center; }
+.coon-custom .dock-row:focus-within {
+  border-color: rgba(46, 230, 200, .7);
+  box-shadow: 0 0 0 4px rgba(46, 230, 200, .14), 0 14px 40px -14px rgba(46, 230, 200, .5);
+}
+.coon-custom input {
+  flex: 1;
   min-width: 0;
+  padding: 4px 0;
   border: 0;
-  border-bottom: 2px solid rgba(46, 230, 200, .5);
   outline: 0;
   background: transparent;
   color: var(--ink);
-  font: 900 clamp(48px, 11vw, 80px)/.85 var(--font-display);
-  padding: 0;
+  font: 900 44px/1 var(--font-display);
+  text-align: right;
   -moz-appearance: textfield;
 }
 .coon-custom input::-webkit-outer-spin-button, .coon-custom input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.coon-custom input:focus { border-bottom-color: var(--palm); }
-.coon-go {
+.coon-unit { flex: none; font: 700 14px/1 var(--font-hud); letter-spacing: .12em; text-transform: uppercase; color: var(--smog); }
+.coon-step {
   flex: none;
-  min-height: 44px;
-  padding: 0 14px;
-  border: 0;
-  background: var(--palm);
-  color: var(--shade);
+  min-width: 46px;
+  min-height: 46px;
+  padding: 0 8px;
+  border: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(255, 255, 255, .04);
+  color: var(--ink);
   font: 800 16px/1 var(--font-hud);
-  letter-spacing: .12em;
-  text-transform: uppercase;
+  letter-spacing: .06em;
   cursor: pointer;
 }
+.coon-custom .add-btn { background: var(--palm); }
 
-/* the running timer takes over the whole app */
+/* Plan: raids as job rows, six to a half hour, then a break */
+.coon-num {
+  position: relative;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 155, 61, .6);
+  background: rgba(255, 155, 61, .07);
+  color: var(--flare);
+  font: 900 22px/1 var(--font-display);
+}
+.coon-num svg { width: 22px; height: 22px; }
+.coon-body { display: block; min-width: 0; padding: 3px 0; }
+.coon-raid .pay, .coon-slot .pay, .coon-break .pay { font-size: 20px; color: var(--flare); }
+.coon-slot { border-style: dashed; background: transparent; }
+.coon-slot .coon-num { border-style: dashed; opacity: .55; }
+.coon-slot .job-text { color: var(--dim); }
+.coon-slot .pay { color: var(--dim); }
+.coon-break {
+  border-style: dashed;
+  border-color: rgba(255, 209, 102, .5);
+  background: linear-gradient(100deg, rgba(255, 209, 102, .11), transparent 50%), var(--asphalt-hi);
+}
+.coon-break .coon-num { border-color: rgba(255, 209, 102, .65); background: rgba(255, 209, 102, .08); color: var(--gold); }
+.coon-break .pay, .coon-break .job-meta { color: var(--gold); }
+.coon-break.is-off { opacity: .45; }
+.coon-plan-msg { min-height: 1.2em; margin: 0; font: 700 12px/1.2 var(--font-hud); letter-spacing: .12em; text-transform: uppercase; color: var(--gold); }
+.coon-plan-msg button { margin-left: 8px; padding: 0; border: 0; background: none; color: var(--ink); font: inherit; text-decoration: underline; text-underline-offset: 3px; cursor: pointer; }
+.coon-plan-foot { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px 14px; }
+.coon-plan-go { background: var(--gold); }
+.coon-plan-go:disabled { opacity: .45; cursor: not-allowed; }
+
+/* the running timer takes over the whole app (and with 5 min, the whole screen) */
 .coon {
+  --chaos: 0;
   position: fixed;
   inset: 0;
   z-index: 48;
   display: flex;
-  align-items: center;
-  justify-content: center;
   padding: calc(20px + env(safe-area-inset-top, 0px)) 20px calc(20px + env(safe-area-inset-bottom, 0px));
-  background: #070912;
-  overflow: hidden;
+  background: var(--night);
+  overflow-x: hidden;
+  overflow-y: auto;
   text-align: center;
 }
 .coon-open body { overflow: hidden; }
+/* city glow, and a red flush that deepens the more trouble the raccoon gets into */
+.coon::before, .coon::after { content: ""; position: fixed; inset: 0; pointer-events: none; }
+.coon::before {
+  background:
+    radial-gradient(110% 55% at 85% -10%, rgba(255, 61, 127, .18), transparent 60%),
+    radial-gradient(80% 45% at -10% 0%, rgba(110, 60, 255, .16), transparent 60%);
+}
+.coon::after {
+  background: radial-gradient(90% 70% at 50% 110%, var(--siren-r), transparent 70%);
+  opacity: calc(min(var(--chaos), 40) * .014);
+  transition: opacity .4s;
+}
 .coon-fill {
-  position: absolute;
+  position: fixed;
   left: 0;
   right: 0;
   bottom: 0;
   height: 0;
-  background: linear-gradient(0deg, rgba(61, 123, 255, .5), rgba(46, 230, 200, .22));
+  background: linear-gradient(0deg, rgba(255, 61, 127, .4), rgba(255, 155, 61, .1));
   transition: height .25s linear;
 }
 .coon-fill::before {
@@ -1693,30 +1794,123 @@ body.is-shake .wrap { animation: shake .4s; }
   right: 0;
   top: 0;
   height: 3px;
-  background: var(--palm);
-  box-shadow: 0 0 24px var(--palm);
+  background: var(--neon);
+  box-shadow: 0 0 24px var(--neon);
 }
-.coon-inner { position: relative; display: flex; flex-direction: column; align-items: center; gap: 14px; max-width: 100%; }
-.coon-face { width: 76px; height: 76px; color: #9bb8ff; }
-.coon-kicker { margin: 0; font: 700 15px/1 var(--font-hud); letter-spacing: .2em; text-transform: uppercase; color: #9bb8ff; }
+.coon-inner { position: relative; z-index: 1; margin: auto; display: flex; flex-direction: column; align-items: center; gap: 14px; width: 100%; max-width: 640px; }
+/* the raccoon itself: calm, then sneaky (into your stash), then feral (raiding your fridge) */
+.coon-face { width: calc(128px + min(var(--chaos), 30) * 1.6px); height: calc(128px + min(var(--chaos), 30) * 1.6px); transition: width .3s var(--snap), height .3s var(--snap); }
+.coon-face img { display: block; width: 100%; height: 100%; filter: drop-shadow(0 6px 0 rgba(5, 4, 10, .75)); }
+.coon-face.is-swap img { animation: moodSwap .5s var(--snap); }
+@keyframes moodSwap { 0% { transform: scale(.7) rotate(-8deg); filter: brightness(2.2); } 100% { transform: none; } }
+.coon-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  padding: 7px 10px;
+  background: rgba(5, 4, 10, .55);
+  border: 1px solid rgba(255, 255, 255, .14);
+  font: 700 14px/1 var(--font-hud);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
 .coon-time {
   font: 900 clamp(110px, 32vw, 300px)/.8 var(--font-display);
   letter-spacing: -.01em;
   font-variant-numeric: tabular-nums;
   color: var(--ink);
-  text-shadow: 0 6px 0 var(--shade);
+  transform: skewX(-7deg);
+  filter: drop-shadow(0 6px 0 rgba(5, 4, 10, .9));
 }
 .coon-sub { margin: 0; max-width: 34ch; font: 600 17px/1.35 var(--font-body); color: var(--smog); }
 .coon-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 6px; }
-.coon-actions .btn { min-height: 48px; background: rgba(7, 9, 18, .6); }
+.coon-actions .btn { min-height: 48px; background: rgba(13, 10, 20, .6); }
 .coon.is-paused .coon-time { opacity: .55; }
+
+/* a planned run: the raid you're on, as a job card, and the run's progress under it */
+.coon-card { width: min(520px, 100%); text-align: left; }
+.coon-card .job-text { font-size: 19px; }
+.coon-card .pay { font-size: 20px; color: var(--flare); }
+.coon-card .job-done svg { opacity: .8; }
+.coon-card.coon-break .job-done { border-color: rgba(255, 209, 102, .65); background: rgba(255, 209, 102, .08); color: var(--gold); }
+.coon-pips { list-style: none; display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin: 0; padding: 0; }
+.coon-pips li { width: 18px; height: 8px; background: rgba(255, 255, 255, .12); transform: skewX(-24deg); }
+.coon-pips li.is-break { width: 10px; background: rgba(255, 209, 102, .25); }
+.coon-pips li.is-done { background: var(--palm); }
+.coon-pips li.is-break.is-done { background: var(--gold); }
+.coon-pips li.is-now { background: var(--neon); box-shadow: 0 0 10px var(--neon); }
+
+/* 5 min: the add-a-minute box. Every minute riles the raccoon up a bit more. */
+.coon-addbox {
+  display: flex;
+  align-items: stretch;
+  gap: 10px;
+  width: min(480px, 100%);
+  padding: 6px;
+  background: rgba(31, 24, 48, .88);
+  border: 1px solid var(--line);
+  text-align: left;
+}
+.coon-add { min-height: 64px; padding: 0 18px 0 16px; font-size: 22px; }
+.coon-add.is-bump { animation: bump .45s var(--snap); }
+.coon-trouble { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 2px 4px; }
+.coon-trouble-label { display: flex; align-items: center; gap: 8px; font: 700 12px/1 var(--font-hud); letter-spacing: .14em; text-transform: uppercase; color: var(--smog); }
+.coon-trouble-label b { color: var(--neon); }
+.coon-fuse i { width: 12px; height: 11px; }
+.coon-fuse i.on { background: var(--neon); }
+.coon-trouble-line { font: 600 15px/1.25 var(--font-body); color: var(--ink); overflow-wrap: anywhere; }
+.coon[data-mode="quick"] .coon-face { animation: coonFidget calc(1.5s - min(var(--chaos), 30) * .035s) ease-in-out infinite; }
+@keyframes coonFidget {
+  25% { transform: translate(calc(var(--chaos) * -.35px), calc(var(--chaos) * .15px)) rotate(calc(var(--chaos) * -.9deg)); }
+  75% { transform: translate(calc(var(--chaos) * .35px), calc(var(--chaos) * -.15px)) rotate(calc(var(--chaos) * .9deg)); }
+}
+.coon.is-wild .coon-addbox { animation: copLights .9s steps(2, jump-none) infinite; }
+.coon.is-wild .coon-trouble-label b { color: var(--siren-r); }
+.coon.is-shake .coon-inner { animation: nudge .35s; }
+
+/* the pop-up when the raccoon gets into something (or a planned run moves on) */
+.coon-pop {
+  position: fixed;
+  left: 50%;
+  top: calc(16px + env(safe-area-inset-top, 0px));
+  z-index: 3;
+  width: min(560px, calc(100% - 32px));
+  margin: 0;
+  padding: 14px 18px;
+  background: var(--gold);
+  color: var(--shade);
+  font: 900 clamp(28px, 7vw, 46px)/.95 var(--font-display);
+  text-transform: uppercase;
+  text-wrap: balance;
+  box-shadow: 7px 9px 0 rgba(255, 61, 127, .9);
+  opacity: 0;
+  transform: translate(-50%, -14px) rotate(-2deg) scale(.9);
+  transition: opacity .2s, transform .35s var(--snap);
+  pointer-events: none;
+}
+.coon-pop.is-on { opacity: 1; transform: translate(-50%, 0) rotate(-2deg); }
+.coon-pop--chaos { background: var(--siren-r); color: var(--ink); box-shadow: 7px 9px 0 rgba(61, 123, 255, .9); }
+.coon-pop--step { background: var(--palm); box-shadow: 7px 9px 0 rgba(5, 4, 10, .9); }
+
 .coon.is-done { background: #1a1405; }
+.coon.is-done::after { opacity: 0; }
 .coon.is-done .coon-fill { height: 100% !important; background: linear-gradient(0deg, rgba(255, 209, 102, .45), rgba(255, 155, 61, .2)); }
 .coon.is-done .coon-fill::before { display: none; }
 .coon.is-done .coon-time { color: var(--gold); animation: coonBlink .8s steps(2, jump-none) infinite; }
-.coon.is-done .coon-kicker, .coon.is-done .coon-face { color: var(--gold); }
+.coon.is-done .coon-kicker { color: var(--gold); }
+.coon.is-done .coon-face { animation: none; }
 .coon.is-done .coon-sub { color: var(--ink); }
 @keyframes coonBlink { 50% { opacity: .35; } }
+@media (max-height: 640px) {
+  .coon-inner { gap: 10px; }
+  .coon-face { width: 72px; height: 72px; }
+  .coon-time { font-size: clamp(84px, 24vh, 200px); }
+}
+@media (max-height: 460px) {
+  .coon-face { display: none; }
+}
 .coon-chip {
   position: fixed;
   right: 16px;
@@ -1726,16 +1920,29 @@ body.is-shake .wrap { animation: shake .4s; }
   align-items: center;
   gap: 8px;
   padding: 8px 14px 8px 10px;
-  border: 1px solid rgba(61, 123, 255, .6);
-  background: rgba(13, 16, 34, .96);
+  border: 1px solid rgba(255, 61, 127, .6);
+  background: rgba(22, 17, 31, .96);
   color: var(--ink);
   font: 900 26px/1 var(--font-display);
   font-variant-numeric: tabular-nums;
   box-shadow: 0 14px 40px -10px rgba(0, 0, 0, .8);
   cursor: pointer;
 }
-.coon-chip svg { width: 26px; height: 26px; color: #9bb8ff; }
+.coon-chip svg { width: 26px; height: 26px; color: var(--flare); }
 .coon-chip.is-done { border-color: var(--gold); color: var(--gold); }
+/* phones: Rename shrinks to its pencil, and the three tabs fit without scrolling */
+@media (max-width: 479px) {
+  .coon-head { gap: 10px; }
+  .coon-head .pick-btn { width: 40px; height: 40px; padding: 0; justify-content: center; }
+  .coon-rename-label { display: none; }
+  .coon-tabs .tabs { gap: 16px; }
+  .coon-tabs .tab { font-size: 22px; }
+}
+@media (hover: hover) {
+  .coon-quick-go:hover { filter: brightness(1.1); }
+  .coon-step:hover { background: rgba(255, 255, 255, .1); }
+  .coon-head .pick-btn:hover { background: var(--flare); color: var(--shade); }
+}
 
 /* ───────────────────────── wider screens ───────────────────────── */
 @media (min-width: 720px) {
@@ -1825,11 +2032,9 @@ body.is-shake .wrap { animation: shake .4s; }
   .tab-panel { padding: 10px 12px 12px; }
   .note-foot time { display: none; }
   .note-foot { justify-content: flex-end; }
-  .coon-tile { min-height: 124px; padding: 12px; }
 }
 @media (min-width: 720px) {
   .tab-panel { padding: 14px 20px 22px; }
-  .coon-tile { min-height: 190px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2129,13 +2334,33 @@ body.is-shake .wrap { animation: shake .4s; }
 <canvas class="fx" id="fx" aria-hidden="true"></canvas>
 
 <!-- Raccoon mode: the running timer, full screen. "Shrink" tucks it into a corner chip. -->
-<div class="coon" id="coon" role="dialog" aria-modal="true" aria-labelledby="coon-kicker" hidden>
+<div class="coon" id="coon" role="dialog" aria-modal="true" aria-labelledby="coon-kicker" data-mode="custom" hidden>
   <div class="coon-fill" id="coon-fill" aria-hidden="true"></div>
+  <div class="coon-pop" id="coon-pop" role="status" aria-live="assertive" aria-atomic="true"></div>
   <div class="coon-inner">
     <span class="coon-face" id="coon-face" aria-hidden="true"></span>
-    <p class="coon-kicker" id="coon-kicker">Raccoon mode · 5 min</p>
+    <p class="coon-kicker"><span class="live-dot" aria-hidden="true"></span><span id="coon-kicker">Raccoon mode · 5 min</span></p>
     <div class="coon-time" id="coon-time" role="timer" aria-atomic="true">5:00</div>
+    <div class="job coon-card" id="coon-card" hidden>
+      <button class="job-done" id="coon-next" type="button" aria-label="Done, next one"></button>
+      <span class="coon-body">
+        <span class="job-text" id="coon-card-text"></span>
+        <span class="job-meta" id="coon-card-meta"></span>
+      </span>
+      <span class="job-side"><span class="pay">5 min</span></span>
+    </div>
+    <ol class="coon-pips" id="coon-pips" aria-hidden="true" hidden></ol>
     <p class="coon-sub" id="coon-sub"></p>
+    <div class="coon-addbox" id="coon-addbox" hidden>
+      <button class="add-btn coon-add" id="coon-add" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+        1 min
+      </button>
+      <div class="coon-trouble">
+        <span class="coon-trouble-label">Trouble <b id="coon-trouble-level">0</b><span class="fuse coon-fuse" id="coon-fuse" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></span>
+        <span class="coon-trouble-line" id="coon-trouble-line"></span>
+      </div>
+    </div>
     <div class="coon-actions" id="coon-actions">
       <button class="btn" id="coon-pause" type="button">Pause</button>
       <button class="btn" id="coon-plus" type="button">+1 min</button>
@@ -2150,28 +2375,101 @@ body.is-shake .wrap { animation: shake .4s; }
 </div>
 <button class="coon-chip" id="coon-chip" type="button" hidden></button>
 
+<!-- Raccoon mode picker, laid out like the board: 5 min, You choose, and Plan (5-minute raids,
+     six to a half hour, then a break). The first time it opens it asks for the raccoon's name. -->
 <dialog class="modal modal--coon" id="coon-dialog" aria-labelledby="coon-dialog-title">
-  <form method="dialog">
-    <p class="eyebrow">Raccoon mode</p>
-    <h2 id="coon-dialog-title">Pick a timer</h2>
-    <p>It fills the screen so you can scurry, grab one thing, and get out.</p>
-    <div class="coon-grid">
-      <button class="coon-tile" type="button" data-mins="5"><b>5</b><small>Minutes</small></button>
-      <button class="coon-tile" type="button" data-mins="10"><b>10</b><small>Minutes</small></button>
-      <button class="coon-tile" type="button" data-mins="15"><b>15</b><small>Minutes</small></button>
-      <div class="coon-tile coon-tile--custom" id="coon-custom-form">
-        <div class="coon-custom">
-          <label class="sr-only" for="coon-custom-input">Custom timer, minutes</label>
-          <input type="number" id="coon-custom-input" inputmode="numeric" min="1" max="240" step="1" value="25" required>
-          <button class="coon-go" id="coon-go" type="button">Go</button>
-        </div>
-        <small>Custom minutes</small>
+  <div class="coon-head">
+    <span class="coon-avatar" id="coon-avatar" aria-hidden="true"></span>
+    <div class="coon-head-text">
+      <p class="eyebrow">Raccoon mode</p>
+      <h2 id="coon-dialog-title">Rackem</h2>
+    </div>
+    <button class="pick-btn" id="coon-rename" type="button" aria-label="Rename your raccoon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16v4z"/><path d="M13.5 6.5l4 4"/></svg>
+      <span class="coon-rename-label">Rename</span>
+    </button>
+    <button class="icon-btn" id="coon-close" type="button" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+
+  <form class="coon-name" id="coon-name-form" autocomplete="off" hidden>
+    <p class="coon-note">Every raccoon needs a name. It goes on the timer, and on all the trouble it gets into.</p>
+    <div class="composer">
+      <label class="sr-only" for="coon-name-input">Your raccoon's name</label>
+      <div class="dock-row">
+        <input type="text" id="coon-name-input" maxlength="20" enterkeyhint="done" placeholder="Rackem">
+        <button type="submit" class="add-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+          Name it
+        </button>
       </div>
     </div>
-    <div class="modal-actions">
-      <button class="btn" value="close" type="submit">Close</button>
+    <div class="coon-name-row">
+      <span class="note-hint">Change it any time with Rename</span>
+      <button class="link-btn" id="coon-name-back" type="button" hidden>Back</button>
     </div>
   </form>
+
+  <div id="coon-pick">
+    <div class="board-head coon-tabs">
+      <div class="tabs" role="tablist" aria-label="Timer type">
+        <button class="tab" id="coon-tab-quick" role="tab" type="button" aria-selected="true" aria-controls="coon-quick">5 min</button>
+        <button class="tab" id="coon-tab-custom" role="tab" type="button" aria-selected="false" aria-controls="coon-custom" tabindex="-1">You choose</button>
+        <button class="tab" id="coon-tab-plan" role="tab" type="button" aria-selected="false" aria-controls="coon-plan" tabindex="-1">Plan <span class="count" id="coon-plan-count">0</span></button>
+      </div>
+    </div>
+
+    <div class="coon-pane" id="coon-quick" role="tabpanel" aria-labelledby="coon-tab-quick">
+      <button class="coon-quick-go" id="coon-quick-go" type="button">
+        <b>5<small>min</small></b>
+        <span>Quick raid · goes full screen</span>
+        <span class="add-btn">Go</span>
+      </button>
+      <p class="coon-note" id="coon-quick-note">Need longer? Add a minute at a time. Every 5 extra minutes, Rackem gets further into your stuff.</p>
+    </div>
+
+    <div class="coon-pane" id="coon-custom" role="tabpanel" aria-labelledby="coon-tab-custom" hidden>
+      <form class="composer coon-custom" id="coon-custom-form" autocomplete="off">
+        <div class="dock-row">
+          <button class="coon-step" type="button" data-step="-5" aria-label="5 minutes less">−5</button>
+          <label class="sr-only" for="coon-custom-input">Timer length, minutes</label>
+          <input type="number" id="coon-custom-input" inputmode="numeric" min="1" max="240" step="1" value="25" required>
+          <span class="coon-unit" aria-hidden="true">min</span>
+          <button class="coon-step" type="button" data-step="5" aria-label="5 minutes more">+5</button>
+          <button type="submit" class="add-btn" id="coon-go">Go</button>
+        </div>
+      </form>
+      <p class="coon-note">Any length from 1 minute to 4 hours. It fills the app; Shrink tucks it into the corner.</p>
+    </div>
+
+    <div class="coon-pane" id="coon-plan" role="tabpanel" aria-labelledby="coon-tab-plan" hidden>
+      <p class="coon-note">Line up <b>5-minute raids</b>: six make half an hour, then a <b>5-minute break</b>. Up to an hour of raids.</p>
+      <form class="composer" id="coon-plan-form" autocomplete="off">
+        <label class="sr-only" for="coon-plan-input">Add a 5-minute raid</label>
+        <div class="dock-row">
+          <input type="text" id="coon-plan-input" maxlength="140" enterkeyhint="done" placeholder="e.g. clear the sink">
+          <button type="submit" class="add-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+            Add
+          </button>
+        </div>
+      </form>
+      <div class="board-bar">
+        <span class="board-bar-text" id="coon-plan-bar"></span>
+        <button class="pick-btn" id="coon-plan-fill" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6.5 12.5L12 18l5.5-5.5"/></svg>
+          From Today
+        </button>
+      </div>
+      <p class="coon-plan-msg" id="coon-plan-msg" aria-live="polite"></p>
+      <ol class="jobs" id="coon-plan-list" aria-label="Planned raids"></ol>
+      <div class="coon-plan-foot">
+        <button class="link-btn" id="coon-plan-clear" type="button">Clear plan</button>
+        <button class="add-btn coon-plan-go" id="coon-plan-go" type="button">Start the run</button>
+      </div>
+    </div>
+  </div>
 </dialog>
 
 <dialog class="modal modal--tabs" id="tabs-dialog" aria-labelledby="tabs-title">
@@ -4772,13 +5070,41 @@ body.is-shake .wrap { animation: shake .4s; }
   })();
 
   // ── Raccoon mode: full-screen timers ───────────────────────────────────
+  // Three kinds: a 5-minute quick raid (goes full screen; every extra minute riles the raccoon
+  // up), a length you choose, and a planned run of 5-minute raids with a 5-minute break after
+  // every six. The raccoon gets a name the first time the picker opens.
   const RACCOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5.5 8.5L4.5 3l4.5 2.8M18.5 8.5l1-5.5L15 5.8"/><path d="M3.5 11c0-3.6 3.8-6 8.5-6s8.5 2.4 8.5 6c0 4.4-3.8 9-8.5 9s-8.5-4.6-8.5-9z"/><path fill="currentColor" stroke="none" fill-rule="evenodd" d="M4 11.2c1.9-1.9 5.4-2.2 8-.6 2.6-1.6 6.1-1.3 8 .6-.4 2-2.3 3.2-4 3.2-1.6 0-2.7-1.1-4-1.1s-2.4 1.1-4 1.1c-1.7 0-3.6-1.2-4-3.2zM9.6 11.6a1.1 1.1 0 10-2.2 0 1.1 1.1 0 002.2 0zM16.6 11.6a1.1 1.1 0 10-2.2 0 1.1 1.1 0 002.2 0z"/><circle cx="12" cy="16.4" r="1.1" fill="currentColor" stroke="none"/></svg>';
+  const CUP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 9h11v5a5 5 0 01-5 5h-1a5 5 0 01-5-5V9z"/><path d="M16 11h1.5a2.5 2.5 0 010 5H16M8.5 3.5c0 1.5 1.5 1.5 1.5 3M12.5 3.5c0 1.5 1.5 1.5 1.5 3"/></svg>';
+  const ARROW_DOWN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v13M6.5 12.5L12 18l5.5-5.5"/></svg>';
+  const COON_DEFAULT_NAME = 'Rackem';
   const COON_LINES = [
     'Scurry. Grab one thing. Get out.', 'Tiny hands, big haul.', 'In and out before anyone notices.',
     'Rummage with purpose.', 'Eyes on the prize. Ignore the shiny stuff.', 'One bin at a time.',
   ];
   const COON_DONE_LINES = ['Clean getaway. Nice raid.', 'Haul secured.', 'Back to the den. Good work.'];
+  // 5 min mode: every 5 extra minutes, the next one of these pops up. {name} is the
+  // raccoon's name. Change them freely; past the last one, the last one stays.
+  const COON_CHAOS = [
+    "{name}'s into your stash",
+    "The stash is gone. {name} ate the lot",
+    "Now {name}'s raiding your fridge",
+    '{name} invited the whole family over',
+    "{name}'s wearing your hoodie",
+    '{name} changed the Wi-Fi password',
+    "{name}'s on your couch, bingeing your shows",
+    "{name}'s put the house in its own name",
+  ];
+  // ...and the minutes in between get a little warning each.
+  const COON_RESTLESS = ['{name} sniffs the air', "{name}'s eyeing your stuff", "{name}'s paws are twitching", "{name}'s at the door"];
+  // The raccoon's face for each trouble level: 0 calm, 1-2 sneaky, 3+ feral.
+  const COON_MOODS = { calm: 'icons/raccoon/calm.webp', sneaky: 'icons/raccoon/sneaky.webp', feral: 'icons/raccoon/feral.webp' };
+  const moodFor = (level) => (level >= 3 ? 'feral' : level >= 1 ? 'sneaky' : 'calm');
+  const COON_QUICK_MINS = 5;
+  const COON_STEP_MINS = 5; // each planned raid, and each break
+  const COON_BLOCK = 6;     // raids per half hour; a break follows every block
+  const COON_PLAN_MAX = 12; // up to an hour of raids
   const COON_MAX_MINS = 240;
+  const COON_TABS = ['quick', 'custom', 'plan'];
   const pad2 = (n) => String(n).padStart(2, '0');
   const coonEl = $('coon');
   const coonChip = $('coon-chip');
@@ -4786,9 +5112,39 @@ body.is-shake .wrap { animation: shake .4s; }
   const coonDialog = $('coon-dialog');
   const coonInput = $('coon-custom-input');
   const baseTitle = document.title;
+
+  const cleanName = (v) => (typeof v === 'string' ? v.replace(/\s+/g, ' ').trim().slice(0, 20) : '');
+  let coonName = cleanName(store.get('mp_raccoon_name', ''));
+  const nameOf = () => coonName || COON_DEFAULT_NAME;
+  const withName = (s) => s.split('{name}').join(nameOf());
+  const chaosLine = (level) => withName(COON_CHAOS[Math.min(level, COON_CHAOS.length) - 1]);
+
+  let raidSeq = Date.now();
+  let coonPlan = (Array.isArray(store.get('mp_raccoon_plan', [])) ? store.get('mp_raccoon_plan', []) : [])
+    .filter((r) => r && typeof r.text === 'string' && r.text.trim())
+    .map((r) => ({ id: Number.isFinite(r.id) ? r.id : ++raidSeq, text: r.text.trim().slice(0, 140) }))
+    .slice(0, COON_PLAN_MAX);
+  const savePlan = () => store.set('mp_raccoon_plan', coonPlan);
+  // A break follows every sixth raid.
+  function planSteps(raids) {
+    const steps = [];
+    raids.forEach((r, i) => {
+      steps.push({ kind: 'raid', text: r.text });
+      if ((i + 1) % COON_BLOCK === 0) steps.push({ kind: 'break', text: 'Break' });
+    });
+    return steps;
+  }
+
   function cleanCoon(c) {
     if (!c || !Number.isFinite(c.total) || c.total <= 0 || !Number.isFinite(c.mins)) return null;
+    const mode = COON_TABS.includes(c.mode) ? c.mode : 'custom'; // timers from before modes were custom ones
+    const steps = (Array.isArray(c.steps) ? c.steps : [])
+      .filter((s) => s && (s.kind === 'raid' || s.kind === 'break') && typeof s.text === 'string')
+      .map((s) => ({ kind: s.kind, text: s.text }));
+    const step = Number.isInteger(c.step) ? c.step : 0;
+    if (mode === 'plan' && (step < 0 || step >= steps.length)) return null;
     return {
+      mode,
       mins: c.mins,
       total: c.total,
       endsAt: Number.isFinite(c.endsAt) ? c.endsAt : null,
@@ -4796,6 +5152,9 @@ body.is-shake .wrap { animation: shake .4s; }
       shrunk: c.shrunk === true,
       line: typeof c.line === 'string' ? c.line : COON_LINES[0],
       doneLine: typeof c.doneLine === 'string' ? c.doneLine : COON_DONE_LINES[0],
+      extra: mode === 'quick' && Number.isInteger(c.extra) && c.extra > 0 ? c.extra : 0, // minutes added in 5 min mode
+      steps: mode === 'plan' ? steps : [],
+      step: mode === 'plan' ? step : 0,
     };
   }
   let coon = cleanCoon(store.get('mp_raccoon', null));
@@ -4814,22 +5173,143 @@ body.is-shake .wrap { animation: shake .4s; }
   const customMins = toInt(store.get('mp_raccoon_custom', 25));
   coonInput.value = String(customMins >= 1 && customMins <= COON_MAX_MINS ? customMins : 25);
 
+  // 5 min mode asks for the real full screen (no browser bars) where the browser allows it.
+  function enterRealFull() {
+    const req = coonEl.requestFullscreen || coonEl.webkitRequestFullscreen;
+    if (!req || document.fullscreenElement || document.webkitFullscreenElement) return;
+    try {
+      const p = req.call(coonEl, { navigationUI: 'hide' });
+      if (p && p.catch) p.catch(() => {});
+    } catch { /* not allowed here */ }
+  }
+  function exitRealFull() {
+    const el = document.fullscreenElement || document.webkitFullscreenElement;
+    if (el !== coonEl) return;
+    try {
+      const p = (document.exitFullscreen || document.webkitExitFullscreen).call(document);
+      if (p && p.catch) p.catch(() => {});
+    } catch { /* already out */ }
+  }
+
   function setCoonOpen(open) {
     coonEl.hidden = !open;
     // While the timer fills the screen, the app behind it can't be tabbed into or scrolled.
     document.querySelector('.hud').inert = open;
     document.querySelector('.wrap').inert = open;
     document.documentElement.classList.toggle('coon-open', open);
+    if (!open) exitRealFull();
   }
+
+  // Plan runs
+  const raidCount = (steps, upto = steps.length) => steps.slice(0, upto).filter((s) => s.kind === 'raid').length;
+  function nextUp() {
+    const later = coon.steps.slice(coon.step + 1);
+    if (!later.length) return 'Last one. Then the run is done.';
+    return later[0].kind === 'break' ? 'Up next: a 5-minute break' : `Up next: ${later[0].text}`;
+  }
+  // Steps follow on from the planned end of the last one, so time with the app closed still
+  // counts. "Done" on a raid (finished early) starts the next step straight away.
+  function nextStep(early) {
+    const from = early ? Date.now() : coon.endsAt;
+    coon.step += 1;
+    coon.total = COON_STEP_MINS * 60 * 1000;
+    coon.endsAt = from + coon.total;
+    coon.left = null;
+    catchUpPlan();
+    saveCoon();
+  }
+  function catchUpPlan() {
+    while (coon && coon.mode === 'plan' && coon.left == null && coon.endsAt <= Date.now() && coon.step < coon.steps.length - 1) {
+      coon.step += 1;
+      coon.total = COON_STEP_MINS * 60 * 1000;
+      coon.endsAt += coon.total;
+    }
+  }
+  function announceStep() {
+    const s = coon.steps[coon.step];
+    popCoon(s.kind === 'break' ? 'Break time. 5 minutes' : `Raid ${raidCount(coon.steps, coon.step + 1)}: ${s.text}`, 'step');
+    sfx.lock();
+    haptic([120, 60, 120]);
+  }
+
+  let popTimer = 0;
+  function popCoon(text, kind) {
+    const pop = $('coon-pop');
+    pop.textContent = text;
+    pop.className = `coon-pop coon-pop--${kind}`;
+    void pop.offsetWidth;
+    pop.classList.add('is-on');
+    clearTimeout(popTimer);
+    popTimer = setTimeout(() => pop.classList.remove('is-on'), 3800);
+  }
+  function hidePop() { clearTimeout(popTimer); $('coon-pop').classList.remove('is-on'); }
+
   function paintCoon() {
     if (!coon) return;
+    const name = nameOf();
     const left = coonDone ? 0 : coonLeft();
     const paused = !coonDone && coon.left != null;
     const time = clock(left);
+    const plan = coon.mode === 'plan';
+    const quick = coon.mode === 'quick';
+    const level = quick ? Math.floor(coon.extra / 5) : 0;
     $('coon-time').textContent = time;
     $('coon-fill').style.height = `${coonDone ? 100 : Math.min(100, (1 - left / coon.total) * 100)}%`;
-    $('coon-kicker').textContent = coonDone ? "Time's up" : `Raccoon mode · ${coon.mins} min${paused ? ' · paused' : ''}`;
-    $('coon-sub').textContent = coonDone ? coon.doneLine || COON_DONE_LINES[0] : coon.line;
+
+    let kicker;
+    if (coonDone) kicker = plan ? `${name}'s run · done` : "Time's up";
+    else if (plan) kicker = coon.steps[coon.step].kind === 'break' ? `${name}'s run · break` : `${name}'s run · raid ${raidCount(coon.steps, coon.step + 1)} of ${raidCount(coon.steps)}`;
+    else if (quick) kicker = `${name} · ${COON_QUICK_MINS} min${coon.extra ? ` +${coon.extra}` : ''}`;
+    else kicker = `${name} · ${coon.mins} min`;
+    $('coon-kicker').textContent = kicker + (paused ? ' · paused' : '');
+
+    let sub;
+    if (coonDone && plan) {
+      const breaks = coon.steps.length - raidCount(coon.steps);
+      sub = `${raidCount(coon.steps)} raid${raidCount(coon.steps) === 1 ? '' : 's'}${breaks ? ` and ${breaks} break${breaks === 1 ? '' : 's'}` : ''}. Clean getaway.`;
+    } else if (coonDone) sub = level ? `That's ${coon.extra} extra minutes. ${name} is not leaving quietly.` : coon.doneLine || COON_DONE_LINES[0];
+    else if (plan) sub = nextUp();
+    else if (level) sub = chaosLine(level);
+    else sub = coon.line;
+    $('coon-sub').textContent = sub;
+
+    // a planned run shows the raid you're on as a job card, with the run's progress under it
+    const card = $('coon-card');
+    card.hidden = !plan || coonDone;
+    $('coon-pips').hidden = !plan;
+    if (plan) {
+      const s = coon.steps[coon.step];
+      const isBreak = s.kind === 'break';
+      card.classList.toggle('coon-break', isBreak);
+      $('coon-card-text').textContent = isBreak ? 'Break. Stretch, drink some water' : s.text;
+      $('coon-card-meta').textContent = isBreak ? 'Done resting? Tap the circle' : 'Done early? Tap the circle';
+      const nextBtn = $('coon-next');
+      const want = isBreak ? CUP : ICON.check;
+      if (nextBtn.dataset.icon !== want) { nextBtn.innerHTML = want; nextBtn.dataset.icon = want; }
+      nextBtn.setAttribute('aria-label', isBreak ? 'End the break' : coon.step < coon.steps.length - 1 ? `Done: ${s.text}. Next one` : `Done: ${s.text}. Finish the run`);
+      const pips = $('coon-pips');
+      if (pips.childElementCount !== coon.steps.length) pips.replaceChildren(...coon.steps.map(() => h('li')));
+      [...pips.children].forEach((li, i) => {
+        li.className = [coon.steps[i].kind === 'break' ? 'is-break' : '', coonDone || i < coon.step ? 'is-done' : '', !coonDone && i === coon.step ? 'is-now' : ''].join(' ').trim();
+      });
+    }
+
+    // 5 min mode: the add-a-minute box, and the raccoon getting wilder
+    $('coon-addbox').hidden = !quick || coonDone;
+    $('coon-plus').hidden = quick;
+    coonEl.dataset.mode = coon.mode;
+    coonEl.style.setProperty('--chaos', String(quick && !coonDone ? Math.min(coon.extra, 40) : 0));
+    coonEl.classList.toggle('is-wild', quick && level >= 3);
+    setMood(moodFor(level));
+    if (quick) {
+      const into = coon.extra % 5;
+      $('coon-trouble-level').textContent = String(level);
+      [...$('coon-fuse').children].forEach((i, n) => i.classList.toggle('on', n < into));
+      $('coon-trouble-line').textContent = !coon.extra ? withName('Each minute riles {name} up')
+        : into ? withName(COON_RESTLESS[(into - 1) % COON_RESTLESS.length]) : '5 more minutes and it gets worse';
+      $('coon-add').setAttribute('aria-label', `Add a minute. ${coon.extra} added so far`);
+    }
+
     $('coon-pause').textContent = paused ? 'Resume' : 'Pause';
     $('coon-actions').hidden = coonDone;
     $('coon-done-actions').hidden = !coonDone;
@@ -4839,39 +5319,74 @@ body.is-shake .wrap { animation: shake .4s; }
     coonBtn.classList.add('is-running');
     coonBtn.classList.toggle('is-done', coonDone);
     coonChip.lastChild.textContent = coonDone ? "Time's up" : time;
-    coonChip.setAttribute('aria-label', coonDone ? "Raccoon timer: time's up. Open it" : `Raccoon timer: ${time} left. Open it`);
+    coonChip.setAttribute('aria-label', coonDone ? `${name}: time's up. Open it` : `${name}: ${time} left. Open it`);
     document.title = coonDone ? `Time's up! · ${baseTitle}` : `${paused ? '⏸ ' : ''}${time} · ${baseTitle}`;
   }
+  function setMood(mood) {
+    if (coonEl.dataset.mood === mood) return;
+    const face = $('coon-face');
+    const swap = !!coonEl.dataset.mood && !coonEl.hidden;
+    coonEl.dataset.mood = mood;
+    face.firstChild.src = COON_MOODS[mood];
+    face.classList.remove('is-swap');
+    if (swap && !reduceMotion()) { void face.offsetWidth; face.classList.add('is-swap'); }
+  }
+  // Fetch all three faces up front, so a mood change never shows a blank.
+  let moodsLoaded = false;
+  function preloadMoods() {
+    if (moodsLoaded) return;
+    moodsLoaded = true;
+    Object.values(COON_MOODS).forEach((src) => { const img = new Image(); img.src = src; });
+  }
   function showCoon(focus = true) {
+    preloadMoods();
     const shrunk = coon.shrunk && !coonDone;
     setCoonOpen(!shrunk);
     coonChip.hidden = !shrunk;
     paintCoon();
     clearInterval(coonTicker);
     coonTicker = setInterval(tickCoon, 250);
-    if (focus && !shrunk) (coonDone ? $('coon-dismiss') : $('coon-pause')).focus();
+    if (focus && !shrunk) (coonDone ? $('coon-dismiss') : coon.mode === 'quick' ? $('coon-add') : $('coon-pause')).focus();
+  }
+  // Bring a shrunk timer back. Called from a tap, so 5 min mode can go full screen again.
+  function reopenCoon() {
+    if (!coon) return;
+    coon.shrunk = false;
+    saveCoon();
+    showCoon();
+    if (coon.mode === 'quick') enterRealFull();
   }
   function tickCoon() {
     if (!coon) return;
-    if (!coonDone && coon.left == null && coonLeft() <= 0) { finishCoon(true); return; }
+    if (!coonDone && coon.left == null && coonLeft() <= 0) {
+      if (coon.mode === 'plan' && coon.step < coon.steps.length - 1) { nextStep(false); announceStep(); paintCoon(); return; }
+      finishCoon(true);
+      return;
+    }
     paintCoon();
   }
-  function startCoon(mins) {
+  function startCoon(mode, mins, steps) {
     stopAlarm();
+    hidePop();
     if (coonDialog.open) coonDialog.close();
     const total = mins * 60 * 1000;
-    coon = { mins, total, endsAt: Date.now() + total, left: null, shrunk: false, line: pick(COON_LINES), doneLine: pick(COON_DONE_LINES) };
+    coon = {
+      mode, mins, total, endsAt: Date.now() + total, left: null, shrunk: false,
+      line: pick(COON_LINES), doneLine: pick(COON_DONE_LINES), extra: 0, steps: steps || [], step: 0,
+    };
     coonDone = false;
     saveCoon();
     sfx.scurry();
     haptic(15);
     showCoon();
+    if (mode === 'quick') enterRealFull();
   }
   function stopAlarm() { clearInterval(coonAlarmTimer); coonAlarmTimer = 0; }
   function finishCoon(withAlarm) {
     coonDone = true;
     coon.shrunk = false;
     saveCoon();
+    hidePop();
     showCoon(withAlarm);
     if (!withAlarm) return;
     let rings = 0;
@@ -4886,6 +5401,7 @@ body.is-shake .wrap { animation: shake .4s; }
   }
   function clearCoon() {
     stopAlarm();
+    hidePop();
     clearInterval(coonTicker);
     coon = null;
     coonDone = false;
@@ -4895,20 +5411,159 @@ body.is-shake .wrap { animation: shake .4s; }
     coonBtn.classList.remove('is-running', 'is-done');
     document.title = baseTitle;
   }
+  function addMinute() {
+    if (coon.left != null) coon.left += 60 * 1000; else coon.endsAt += 60 * 1000;
+    coon.total += 60 * 1000;
+  }
+
+  // ── The picker ──
+  let coonTab = COON_TABS.includes(store.get('mp_raccoon_tab', 'quick')) ? store.get('mp_raccoon_tab', 'quick') : 'quick';
+  let openRaid = null; // which planned raid's tray is open
+  const coonTabEl = (tab) => $(`coon-tab-${tab}`);
+  function setCoonTab(tab, focus) {
+    coonTab = tab;
+    store.set('mp_raccoon_tab', tab);
+    COON_TABS.forEach((t) => {
+      const on = t === tab;
+      coonTabEl(t).setAttribute('aria-selected', String(on));
+      coonTabEl(t).tabIndex = on ? 0 : -1;
+      $(`coon-${t}`).hidden = !on;
+    });
+    if (focus) coonTabEl(tab).focus();
+  }
+  function paintNames() {
+    const name = nameOf();
+    $('coon-dialog-title').textContent = name;
+    $('coon-quick-note').textContent = `Need longer? Add a minute at a time. Every 5 extra minutes, ${name} gets further into your stuff.`;
+    coonBtn.setAttribute('aria-label', `${name}: raccoon timers`);
+    coonBtn.title = `${name}: raccoon timers`;
+  }
+  function showNaming(on, renaming) {
+    $('coon-name-form').hidden = !on;
+    $('coon-pick').hidden = on;
+    $('coon-rename').hidden = on;
+    $('coon-name-back').hidden = !renaming;
+    if (!on) return;
+    const field = $('coon-name-input');
+    field.value = nameOf();
+    field.focus();
+    field.select();
+  }
+  function openPicker() {
+    openRaid = null;
+    renderPlan();
+    paintNames();
+    if (typeof coonDialog.showModal === 'function') coonDialog.showModal();
+    else coonDialog.setAttribute('open', '');
+    // the first time, ask for the raccoon's name
+    if (!store.has('mp_raccoon_name')) showNaming(true, false);
+    else { showNaming(false); setCoonTab(coonTab, true); }
+  }
+
+  let planMsgTimer = 0;
+  function planMsg(text, undo) {
+    const el = $('coon-plan-msg');
+    el.replaceChildren(text);
+    if (undo) {
+      const btn = h('button', { type: 'button' }, 'Undo');
+      btn.addEventListener('click', () => { undo(); planMsg(''); });
+      el.append(btn);
+    }
+    clearTimeout(planMsgTimer);
+    if (text) planMsgTimer = setTimeout(() => el.replaceChildren(), undo ? 6000 : 3000);
+  }
+  // Minutes from the start of the run, e.g. 35 -> "0:35"
+  const runAt = (m) => `${Math.floor(m / 60)}:${pad2(m % 60)}`;
+  const raidStart = (i) => i * COON_STEP_MINS + Math.floor(i / COON_BLOCK) * COON_STEP_MINS;
+  function renderPlan() {
+    const n = coonPlan.length;
+    const items = [];
+    // Room for the first half hour; once that's full, room for the second.
+    const slots = n <= COON_BLOCK ? COON_BLOCK : COON_PLAN_MAX;
+    for (let i = 0; i < slots; i++) {
+      const r = coonPlan[i];
+      const at = raidStart(i);
+      const when = `${runAt(at)}–${runAt(at + COON_STEP_MINS)}`;
+      if (r) {
+        const open = openRaid === r.id;
+        items.push(h('li', { class: `job coon-raid${open ? ' is-open' : ''}`, 'data-id': String(r.id) },
+          h('span', { class: 'coon-num', 'aria-hidden': 'true' }, String(i + 1)),
+          h('button', { class: 'job-body', type: 'button', 'data-act': 'toggle', 'aria-expanded': String(open), 'aria-controls': `tray-raid-${r.id}` },
+            h('span', { class: 'job-text' }, r.text),
+            h('span', { class: 'job-meta' }, `Raid ${i + 1} · ${when}`)),
+          h('span', { class: 'job-side' }, h('span', { class: 'pay' }, '5 min')),
+          h('div', { class: 'job-tray', id: `tray-raid-${r.id}`, hidden: !open },
+            i > 0 ? h('button', { class: 'tray-btn', type: 'button', 'data-act': 'up' }, iconEl(ICON.sunrise), 'Earlier') : null,
+            i < n - 1 ? h('button', { class: 'tray-btn', type: 'button', 'data-act': 'down' }, iconEl(ARROW_DOWN), 'Later') : null,
+            h('button', { class: 'tray-btn tray-btn--danger', type: 'button', 'data-act': 'remove' }, iconEl(ICON.x), 'Remove'))));
+      } else {
+        items.push(h('li', { class: 'job coon-slot', 'aria-hidden': 'true' },
+          h('span', { class: 'coon-num' }, String(i + 1)),
+          h('span', { class: 'coon-body' }, h('span', { class: 'job-text' }, 'Open slot'), h('span', { class: 'job-meta' }, when)),
+          h('span', { class: 'job-side' }, h('span', { class: 'pay' }, '5 min'))));
+      }
+      if ((i + 1) % COON_BLOCK === 0) {
+        const at2 = raidStart(i) + COON_STEP_MINS;
+        const earned = n > i;
+        items.push(h('li', { class: `job coon-break${earned ? '' : ' is-off'}` },
+          h('span', { class: 'coon-num', 'aria-hidden': 'true', icon: CUP }),
+          h('span', { class: 'coon-body' },
+            h('span', { class: 'job-text' }, 'Break'),
+            h('span', { class: 'job-meta' }, earned ? `${runAt(at2)}–${runAt(at2 + COON_STEP_MINS)}` : `After raid ${i + 1}`)),
+          h('span', { class: 'job-side' }, h('span', { class: 'pay' }, '5 min'))));
+      }
+    }
+    $('coon-plan-list').replaceChildren(...items);
+    const runMins = planSteps(coonPlan).length * COON_STEP_MINS;
+    const bar = $('coon-plan-bar');
+    bar.replaceChildren(`${n} of ${COON_PLAN_MAX} raids · `, h('b', null, n ? `${runMins} min run` : 'nothing planned'));
+    $('coon-plan-count').textContent = String(n);
+    const go = $('coon-plan-go');
+    go.disabled = !n;
+    go.textContent = n ? `Start the run · ${runMins} min` : 'Start the run';
+    $('coon-plan-clear').hidden = !n;
+    $('coon-plan-input').disabled = n >= COON_PLAN_MAX;
+    $('coon-plan-input').placeholder = n >= COON_PLAN_MAX ? "Plan's full" : 'e.g. clear the sink';
+  }
 
   coonChip.append(iconEl(RACCOON), h('span'));
   coonBtn.append(iconEl(RACCOON));
+  const moodImg = (mood) => h('img', { src: COON_MOODS[mood], alt: '', width: '512', height: '512', decoding: 'async' });
+  $('coon-face').append(moodImg('calm'));
+  $('coon-avatar').append(moodImg('calm'));
+  $('coon-quick-go').prepend(moodImg('sneaky'));
+  paintNames();
   // The icon opens the timer picker; with a timer already running it brings that timer back instead.
-  coonBtn.addEventListener('click', () => {
-    if (coon) { coon.shrunk = false; saveCoon(); showCoon(); return; }
-    if (typeof coonDialog.showModal === 'function') coonDialog.showModal();
-    else coonDialog.setAttribute('open', '');
+  coonBtn.addEventListener('click', () => { if (coon) reopenCoon(); else openPicker(); });
+  $('coon-close').addEventListener('click', () => coonDialog.close());
+  $('coon-rename').addEventListener('click', () => showNaming(true, true));
+  $('coon-name-back').addEventListener('click', () => { showNaming(false); setCoonTab(coonTab, true); });
+  $('coon-name-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    coonName = cleanName($('coon-name-input').value) || COON_DEFAULT_NAME;
+    store.set('mp_raccoon_name', coonName);
+    paintNames();
+    showNaming(false);
+    setCoonTab(coonTab, true);
+    sfx.add();
   });
-  $('coon-face').append(iconEl(RACCOON));
-  document.querySelectorAll('.coon-tile').forEach((tile) => tile.prepend(iconEl(RACCOON)));
-  document.querySelectorAll('.coon-tile[data-mins]').forEach((tile) => {
-    tile.addEventListener('click', () => startCoon(Number(tile.dataset.mins)));
+  COON_TABS.forEach((tab) => coonTabEl(tab).addEventListener('click', () => setCoonTab(tab)));
+  $('coon-pick').querySelector('[role="tablist"]').addEventListener('keydown', (e) => {
+    const i = COON_TABS.indexOf(coonTab);
+    let to = null;
+    if (e.key === 'ArrowRight') to = COON_TABS[(i + 1) % COON_TABS.length];
+    else if (e.key === 'ArrowLeft') to = COON_TABS[(i + COON_TABS.length - 1) % COON_TABS.length];
+    else if (e.key === 'Home') to = COON_TABS[0];
+    else if (e.key === 'End') to = COON_TABS[COON_TABS.length - 1];
+    if (!to) return;
+    e.preventDefault();
+    setCoonTab(to, true);
   });
+
+  // 5 min
+  $('coon-quick-go').addEventListener('click', () => startCoon('quick', COON_QUICK_MINS));
+
+  // You choose
   const startCustom = () => {
     const mins = Math.round(Number(coonInput.value));
     if (!Number.isFinite(mins) || mins < 1 || mins > COON_MAX_MINS) {
@@ -4918,10 +5573,92 @@ body.is-shake .wrap { animation: shake .4s; }
     }
     coonInput.value = String(mins);
     store.set('mp_raccoon_custom', mins);
-    startCoon(mins);
+    startCoon('custom', mins);
   };
-  $('coon-go').addEventListener('click', startCustom);
-  coonInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); startCustom(); } });
+  $('coon-custom-form').addEventListener('submit', (e) => { e.preventDefault(); startCustom(); });
+  document.querySelectorAll('.coon-step').forEach((btn) => btn.addEventListener('click', () => {
+    const cur = Math.round(Number(coonInput.value)) || 0;
+    // snap to the 5s: 23 goes to 25 or 20
+    const next = Number(btn.dataset.step) > 0 ? Math.floor(cur / 5) * 5 + 5 : Math.ceil(cur / 5) * 5 - 5;
+    coonInput.value = String(Math.min(COON_MAX_MINS, Math.max(1, next)));
+    sfx.tick();
+  }));
+
+  // Plan
+  $('coon-plan-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const field = $('coon-plan-input');
+    const text = field.value.trim().slice(0, 140);
+    if (!text) { field.focus(); return; }
+    if (coonPlan.length >= COON_PLAN_MAX) { planMsg('Full: that\'s an hour of raids'); return; }
+    coonPlan.push({ id: ++raidSeq, text });
+    savePlan();
+    field.value = '';
+    renderPlan();
+    sfx.add();
+    if (coonPlan.length === COON_BLOCK) planMsg('Half an hour planned. Break after this one');
+    else if (coonPlan.length === COON_PLAN_MAX) planMsg('A full hour planned');
+    if (!field.disabled) field.focus();
+  });
+  $('coon-plan-list').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-act]');
+    const li = e.target.closest('li[data-id]');
+    if (!btn || !li) return;
+    const id = Number(li.dataset.id);
+    const i = coonPlan.findIndex((r) => r.id === id);
+    if (i < 0) return;
+    const act = btn.dataset.act;
+    let focusAct = null;
+    if (act === 'toggle') { openRaid = openRaid === id ? null : id; focusAct = 'toggle'; }
+    else if (act === 'up' && i > 0) { [coonPlan[i - 1], coonPlan[i]] = [coonPlan[i], coonPlan[i - 1]]; focusAct = i - 1 > 0 ? 'up' : 'down'; }
+    else if (act === 'down' && i < coonPlan.length - 1) { [coonPlan[i + 1], coonPlan[i]] = [coonPlan[i], coonPlan[i + 1]]; focusAct = i + 1 < coonPlan.length - 1 ? 'down' : 'up'; }
+    else if (act === 'remove') {
+      const removed = coonPlan[i];
+      coonPlan.splice(i, 1);
+      openRaid = null;
+      planMsg(`Removed "${removed.text}"`, () => { coonPlan.splice(Math.min(i, coonPlan.length), 0, removed); coonPlan = coonPlan.slice(0, COON_PLAN_MAX); savePlan(); renderPlan(); });
+      sfx.drop();
+    }
+    savePlan();
+    renderPlan();
+    // keep keyboard focus on the raid that moved
+    if (focusAct) {
+      const again = $('coon-plan-list').querySelector(`li[data-id="${id}"] [data-act="${focusAct}"]`);
+      if (again) again.focus();
+    } else $('coon-plan-input').focus();
+  });
+  $('coon-plan-fill').addEventListener('click', () => {
+    const have = new Set(coonPlan.map((r) => r.text.toLowerCase()));
+    const today = missions.filter((m) => calculateDaysOld(m.createdAt) < 7).sort(byHeat);
+    let added = 0;
+    for (const m of today) {
+      if (coonPlan.length >= COON_PLAN_MAX) break;
+      const text = m.text.trim().slice(0, 140);
+      if (!text || have.has(text.toLowerCase())) continue;
+      coonPlan.push({ id: ++raidSeq, text });
+      have.add(text.toLowerCase());
+      added++;
+    }
+    savePlan();
+    renderPlan();
+    if (added) { sfx.add(); planMsg(`Added ${added} job${added === 1 ? '' : 's'} from Today`); }
+    else planMsg(!today.length ? 'Nothing on Today yet' : coonPlan.length >= COON_PLAN_MAX ? 'Full: that\'s an hour of raids' : "Today's jobs are already in");
+  });
+  $('coon-plan-clear').addEventListener('click', () => {
+    const was = coonPlan;
+    coonPlan = [];
+    openRaid = null;
+    savePlan();
+    renderPlan();
+    sfx.drop();
+    planMsg('Plan cleared', () => { coonPlan = was; savePlan(); renderPlan(); });
+  });
+  $('coon-plan-go').addEventListener('click', () => {
+    if (!coonPlan.length) return;
+    startCoon('plan', COON_STEP_MINS, planSteps(coonPlan));
+  });
+
+  // The running timer
   $('coon-pause').addEventListener('click', () => {
     if (!coon || coonDone) return;
     if (coon.left != null) { coon.endsAt = Date.now() + coon.left; coon.left = null; }
@@ -4932,28 +5669,63 @@ body.is-shake .wrap { animation: shake .4s; }
   });
   $('coon-plus').addEventListener('click', () => {
     if (!coon || coonDone) return;
-    if (coon.left != null) coon.left += 60 * 1000; else coon.endsAt += 60 * 1000;
-    coon.total += 60 * 1000;
+    addMinute();
     saveCoon();
     sfx.tick();
+    paintCoon();
+  });
+  // 5 min mode: every minute added gets the raccoon a bit further into your place
+  $('coon-add').addEventListener('click', () => {
+    if (!coon || coonDone || coon.mode !== 'quick') return;
+    addMinute();
+    coon.extra += 1;
+    saveCoon();
+    const add = $('coon-add');
+    add.classList.remove('is-bump');
+    void add.offsetWidth;
+    add.classList.add('is-bump');
+    if (coon.extra % 5 === 0) {
+      const level = coon.extra / 5;
+      popCoon(chaosLine(level), 'chaos');
+      sfx.whoop(Math.min(level, MAX_HEAT));
+      haptic([90, 40, 90, 40, 200]);
+      if (!reduceMotion()) {
+        coonEl.classList.remove('is-shake');
+        void coonEl.offsetWidth;
+        coonEl.classList.add('is-shake');
+      }
+    } else {
+      sfx.tick();
+      haptic(12);
+    }
+    paintCoon();
+  });
+  $('coon-next').addEventListener('click', () => {
+    if (!coon || coonDone || coon.mode !== 'plan') return;
+    // the last one, done early: no alarm needed, you were there
+    if (coon.step >= coon.steps.length - 1) { finishCoon(false); sfx.rankUp(); haptic([60, 40, 120]); $('coon-dismiss').focus(); return; }
+    nextStep(true);
+    announceStep();
     paintCoon();
   });
   $('coon-hide').addEventListener('click', () => {
     if (!coon) return;
     coon.shrunk = true;
     saveCoon();
+    hidePop();
     showCoon();
     coonChip.focus();
   });
-  coonChip.addEventListener('click', () => {
-    if (!coon) return;
-    coon.shrunk = false;
-    saveCoon();
-    showCoon();
-  });
+  coonChip.addEventListener('click', reopenCoon);
   $('coon-stop').addEventListener('click', () => { clearCoon(); sfx.drop(); toast('Timer stopped'); });
   $('coon-dismiss').addEventListener('click', clearCoon);
-  $('coon-again').addEventListener('click', () => startCoon(coon ? coon.mins : 5));
+  $('coon-again').addEventListener('click', () => {
+    if (!coon) { startCoon('quick', COON_QUICK_MINS); return; }
+    if (coon.mode === 'plan') startCoon('plan', COON_STEP_MINS, coon.steps);
+    else if (coon.mode === 'quick') startCoon('quick', COON_QUICK_MINS);
+    else startCoon('custom', coon.mins);
+  });
+  coonEl.addEventListener('animationend', (e) => { if (e.animationName === 'nudge') coonEl.classList.remove('is-shake'); });
   coonEl.addEventListener('keydown', (e) => {
     if (e.key !== 'Escape') return;
     e.preventDefault();
@@ -4961,9 +5733,10 @@ body.is-shake .wrap { animation: shake .4s; }
   });
   document.addEventListener('visibilitychange', () => { if (!document.hidden) tickCoon(); });
 
-  // A timer left running when the app was closed: pick it back up. If it ran out
-  // a while ago, just say so rather than ringing.
+  // A timer left running when the app was closed: pick it back up (a planned run skips ahead to
+  // the step it's on now). If it ran out a while ago, just say so rather than ringing.
   if (coon) {
+    catchUpPlan();
     if (coon.left == null && coonLeft() <= 0) {
       if (Date.now() - coon.endsAt < 10 * 60 * 1000) finishCoon(false);
       else { clearCoon(); setTimeout(() => toast('Your raccoon timer finished while you were away'), 600); }
